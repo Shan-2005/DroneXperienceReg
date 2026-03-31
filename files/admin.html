@@ -356,7 +356,9 @@
         const res = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'getAdminData', user: u, pass: p })
+          body: JSON.stringify({ action: 'getAdminData', user: u, pass: p }),
+          referrerPolicy: 'no-referrer',
+          cache: 'no-cache'
         });
         const data = await res.json();
 
@@ -444,7 +446,9 @@
         const res = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'getAdminData', user: currentUser, pass: currentPass })
+          body: JSON.stringify({ action: 'getAdminData', user: currentUser, pass: currentPass }),
+          referrerPolicy: 'no-referrer',
+          cache: 'no-cache'
         });
         const data = await res.json();
         if (data.success) {
@@ -464,7 +468,9 @@
         const res = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'approve', ticketId, adminName: currentUser })
+          body: JSON.stringify({ action: 'approve', ticketId, adminName: currentUser }),
+          referrerPolicy: 'no-referrer',
+          cache: 'no-cache'
         });
         const data = await res.json();
         if (data.success) refreshData();
@@ -482,7 +488,9 @@
         const res = await fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'checkin', ticketId, volunteerName: currentUser })
+          body: JSON.stringify({ action: 'checkin', ticketId, volunteerName: currentUser }),
+          referrerPolicy: 'no-referrer',
+          cache: 'no-cache'
         });
         const data = await res.json();
         if (data.success) refreshData();
