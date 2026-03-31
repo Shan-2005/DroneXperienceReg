@@ -39,21 +39,23 @@
     /* ─── LOGIN SCREEN ───────────────────────────────────────────── */
     #login-screen { 
       min-height: 100vh; display: flex; align-items: center; justify-content: center; 
-      padding: 20px; background: radial-gradient(circle at top right, #1a1a24 0%, #0a0a0f 100%);
+      padding: 16px; background: radial-gradient(circle at top right, #1a1a24 0%, #0a0a0f 100%);
     }
     .login-card { 
-      width: 100%; max-width: 380px; background: rgba(255,255,255,0.03); 
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border); border-radius: 32px; padding: 40px 30px; 
+      width: 100%; max-width: 360px; background: rgba(255,255,255,0.03); 
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border); border-radius: 32px; padding: 40px 24px; 
       text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
       animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-x: hidden;
     }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     
     .login-header { margin-bottom: 40px; }
     .login-header h1 { 
-      font-family: var(--head); font-size: calc(1.5rem + 1vw); font-weight: 800; 
-      letter-spacing: -0.5px; margin-bottom: 8px;
+      font-family: var(--head); font-size: clamp(1.4rem, 8vw, 2.2rem); font-weight: 800; 
+      letter-spacing: -0.8px; margin-bottom: 8px;
+      word-break: break-all;
       background: linear-gradient(135deg, #fff 0%, var(--muted) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
@@ -74,8 +76,9 @@
     }
 
     .btn {
-      width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none;
-      border-radius: 18px; font-family: var(--head); font-size: 14px; font-weight: 800;
+      width: 100%; padding: 18px 12px; background: var(--accent); color: #fff; border: none;
+      border-radius: 18px; font-family: var(--head); font-size: 13px; font-weight: 800;
+      letter-spacing: 0.5px; line-height: 1.4;
       cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
       box-shadow: 0 10px 30px rgba(0, 137, 123, 0.2);
     }
