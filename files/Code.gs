@@ -49,6 +49,12 @@ function doGet(e) {
     if (action === 'getAdminData') {
       return getAdminDashboardData(e.parameter.user, e.parameter.pass);
     }
+    if (action === 'checkin') {
+      return handleCheckin(e.parameter); // Handles ticketId and volunteerName from parameters
+    }
+    if (action === 'approve') {
+      return approveParticipant(e.parameter); // Handles ticketId and adminName from parameters
+    }
 
     const ticketId = (e.parameter.ticketId || '').trim().toUpperCase();
     if (!ticketId) return corsOutput({ found: false, error: 'No ticketId provided' });
