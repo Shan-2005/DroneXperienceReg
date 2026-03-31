@@ -472,7 +472,9 @@
         if (data.success) refreshData();
         else alert(data.message);
       } catch (err) { 
-        alert('Approve Error (GET): ' + err.message);
+        const link = `${url}&manual=true`;
+        alert(`Auto-Approve Failed (Network/CORS).\n\nPLEASE CLICK OK, THEN OPEN THIS LINK IN A NEW TAB TO FIX:\n\n${link}`);
+        console.error('Approve Error:', err);
       }
       showLoading(false);
     }
@@ -490,7 +492,9 @@
         if (data.success) refreshData();
         else alert(data.message);
       } catch (err) { 
-        alert('Check-in Error (GET): ' + err.message);
+        const link = `${url}&manual=true`;
+        alert(`Auto-Check-in Failed (Network/CORS).\n\nPLEASE CLICK OK, THEN OPEN THIS LINK IN A NEW TAB TO FIX:\n\n${link}`);
+        console.error('Check-in Error:', err);
       }
       showLoading(false);
     }
