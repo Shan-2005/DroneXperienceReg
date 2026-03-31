@@ -125,7 +125,9 @@
     .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 32px; }
     @media (min-width: 900px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
     
-    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; transition: 0.3s; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; transition: 0.3s; cursor: pointer; }
+    .stat-card:hover { transform: translateY(-4px); border-color: var(--accent); background: rgba(0, 137, 123, 0.05); }
+    .stat-card:active { transform: scale(0.98); }
     .stat-card.total { background: linear-gradient(135deg, rgba(0, 137, 123, 0.1), transparent); border-color: rgba(0, 137, 123, 0.3); }
     .stat-card label { display: block; font-size: 0.65rem; font-weight: 700; color: #94a3b8; letter-spacing: 0.1em; margin-bottom: 0.5rem; }
     .stat-card i { color: var(--accent); margin-right: 0.3rem; }
@@ -241,19 +243,19 @@
 
     <!-- STATS -->
     <div class="stats-grid">
-      <div class="stat-card">
+      <div class="stat-card total" onclick="filterByStatus('All')">
         <label><i class="fas fa-users"></i> TOTAL REGISTERED</label>
         <div class="value" id="stat-total">0</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" onclick="filterByStatus('PendingApproval')">
         <label><i class="fas fa-hourglass-half"></i> PENDING APPROVAL</label>
         <div class="value" id="stat-pending">0</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" onclick="filterByStatus('Approved')">
         <label><i class="fas fa-check-double"></i> APPROVED (NOT IN)</label>
         <div class="value" id="stat-approved">0</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card" onclick="filterByStatus('Yes')">
         <label><i class="fas fa-user-check"></i> CHECKED IN (AT VENUE)</label>
         <div class="value" id="stat-checked">0</div>
       </div>
@@ -262,19 +264,6 @@
     <!-- MAIN GRID -->
     <div class="main-grid">
       
-      <!-- Registry -->
-      <section class="registry-box">
-        <div class="registry-header">
-          <div class="search-wrap">
-            <input type="text" id="search-input" placeholder="Search by name, ID, or org..." onkeyup="handleSearch()" />
-          </div>
-        </div>
-
-        <div id="registry-render">
-          <!-- JS will inject .mobile-cards or .desktop-table-wrap here -->
-        </div>
-      </section>
-
       <!-- Scanner -->
       <aside class="side-box">
         <h3 class="side-title"><i class="fas fa-camera" style="color:var(--accent);"></i> Venue Scanner</h3>
@@ -311,6 +300,19 @@
           <button class="btn-secondary" style="width:100%;" onclick="resetScanner()">Scan Another</button>
         </div>
       </aside>
+
+      <!-- Registry -->
+      <section class="registry-box">
+        <div class="registry-header">
+          <div class="search-wrap">
+            <input type="text" id="search-input" placeholder="Search by name, ID, or org..." onkeyup="handleSearch()" />
+          </div>
+        </div>
+
+        <div id="registry-render">
+          <!-- JS will inject .mobile-cards or .desktop-table-wrap here -->
+        </div>
+      </section>
 
     </div>
   </div>
@@ -470,6 +472,20 @@
         m.org.toLowerCase().includes(q)
       );
       renderTable(filtered);
+    }
+
+    function filterByStatus(status) {
+      if (status === 'All') {
+        renderTable(allMembers);
+        return;
+      }
+      const filtered = allMembers.filter(m => m.status === status);
+      renderTable(filtered);
+      
+      // Auto-scroll to registry on mobile
+      if (window.innerWidth < 650) {
+        document.getElementById('registry-render').scrollIntoView({ behavior: 'smooth' });
+      }
     }
 
     async function refreshData() {
