@@ -353,12 +353,10 @@
       errorMsg.style.display = 'none';
 
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'getAdminData', user: u, pass: p }),
-          referrerPolicy: 'no-referrer',
-          cache: 'no-cache'
+        const url = `${APPS_SCRIPT_URL}?action=getAdminData&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`;
+        const res = await fetch(url, { 
+          method: 'GET',
+          referrerPolicy: 'no-referrer'
         });
         const data = await res.json();
 
@@ -443,12 +441,10 @@
     async function refreshData() {
       document.getElementById('loading-overlay').style.display = 'flex';
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'getAdminData', user: currentUser, pass: currentPass }),
-          referrerPolicy: 'no-referrer',
-          cache: 'no-cache'
+        const url = `${APPS_SCRIPT_URL}?action=getAdminData&user=${encodeURIComponent(currentUser)}&pass=${encodeURIComponent(currentPass)}`;
+        const res = await fetch(url, { 
+          method: 'GET',
+          referrerPolicy: 'no-referrer'
         });
         const data = await res.json();
         if (data.success) {
@@ -456,7 +452,9 @@
           renderStats(data.stats);
           renderTable(data.members);
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error('Refresh Error:', err);
+      }
       document.getElementById('loading-overlay').style.display = 'none';
     }
 
@@ -465,18 +463,16 @@
       if (!confirm(`Approve ${ticketId}?`)) return;
       showLoading(true);
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'approve', ticketId, adminName: currentUser }),
-          referrerPolicy: 'no-referrer',
-          cache: 'no-cache'
+        const url = `${APPS_SCRIPT_URL}?action=approve&ticketId=${encodeURIComponent(ticketId)}&adminName=${encodeURIComponent(currentUser)}`;
+        const res = await fetch(url, { 
+          method: 'GET',
+          referrerPolicy: 'no-referrer'
         });
         const data = await res.json();
         if (data.success) refreshData();
         else alert(data.message);
       } catch (err) { 
-        alert('Approve Error: ' + err.message + '\n\nCheck your internet and Apps Script "Anyone" access.');
+        alert('Approve Error (GET): ' + err.message);
       }
       showLoading(false);
     }
@@ -485,18 +481,16 @@
       if (!confirm(`Check-in ${ticketId}?`)) return;
       showLoading(true);
       try {
-        const res = await fetch(APPS_SCRIPT_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'checkin', ticketId, volunteerName: currentUser }),
-          referrerPolicy: 'no-referrer',
-          cache: 'no-cache'
+        const url = `${APPS_SCRIPT_URL}?action=checkin&ticketId=${encodeURIComponent(ticketId)}&volunteerName=${encodeURIComponent(currentUser)}`;
+        const res = await fetch(url, { 
+          method: 'GET',
+          referrerPolicy: 'no-referrer'
         });
         const data = await res.json();
         if (data.success) refreshData();
         else alert(data.message);
       } catch (err) { 
-        alert('Check-in Error: ' + err.message + '\n\nCheck your internet and Apps Script "Anyone" access.');
+        alert('Check-in Error (GET): ' + err.message);
       }
       showLoading(false);
     }
