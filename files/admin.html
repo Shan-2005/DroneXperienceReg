@@ -469,7 +469,9 @@
         const data = await res.json();
         if (data.success) refreshData();
         else alert(data.message);
-      } catch (err) { alert('Network Error'); }
+      } catch (err) { 
+        alert('Approve Error: ' + err.message + '\n\nCheck your internet and Apps Script "Anyone" access.');
+      }
       showLoading(false);
     }
 
@@ -485,7 +487,9 @@
         const data = await res.json();
         if (data.success) refreshData();
         else alert(data.message);
-      } catch (err) { alert('Network Error'); }
+      } catch (err) { 
+        alert('Check-in Error: ' + err.message + '\n\nCheck your internet and Apps Script "Anyone" access.');
+      }
       showLoading(false);
     }
 
