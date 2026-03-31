@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard — DroneXperience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #161b22;
+      --surface-light: #1c2128;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #00897b;
+      --accent-glow: rgba(0, 137, 123, 0.3);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --head: 'Syne', sans-serif;
+      --body: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--body); min-height: 100dvh; overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: -1;
+      background: radial-gradient(circle at 50% 0%, rgba(0, 137, 123, 0.15) 0%, transparent 80%);
+    }
+
+    /* ─── LOGIN SCREEN ───────────────────────────────────────────── */
+    #login-screen {
+      min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .login-card {
+      width: 100%; max-width: 440px;
+      background: rgba(22, 27, 34, 0.4); backdrop-filter: blur(40px);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 32px;
+      padding: 48px 32px; text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+      animation: fadeIn .8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .login-header { margin-bottom: 40px; }
+    .login-header h1 { 
+      font-family: var(--head); font-size: 1.8rem; font-weight: 800; 
+      letter-spacing: -0.5px; margin-bottom: 8px;
+      white-space: nowrap; overflow: visible;
+      background: linear-gradient(135deg, #fff 0%, var(--muted) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .login-header p { color: var(--muted); font-size: 14px; font-weight: 500; }
+
+    .input-group { text-align: left; margin-bottom: 24px; }
+    label { display: block; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 10px; }
+    input {
+      width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px 20px; color: #fff; font-size: 15px; outline: none; 
+      transition: all 0.3s ease;
+    }
+    input::placeholder { color: rgba(255,255,255,0.2); }
+    input:focus { 
+      border-color: var(--accent); 
+      background: rgba(0,0,0,0.5);
+      box-shadow: 0 0 0 4px rgba(0, 137, 123, 0.15);
+    }
+
+    .btn {
+      width: 100%; padding: 18px; background: var(--accent); color: #fff; border: none;
+      border-radius: 18px; font-family: var(--head); font-size: 14px; font-weight: 800;
+      cursor: pointer; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0, 137, 123, 0.2);
+      white-space: nowrap;
+    }
+    .btn:hover { 
+      transform: translateY(-4px); 
+      background: #009688;
+      box-shadow: 0 15px 40px rgba(0, 137, 123, 0.4); 
+    }
+    .btn:active { transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .login-error { 
+      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--red); padding: 12px; border-radius: 12px;
+      font-size: 13px; font-weight: 600; margin-top: 24px; display: none; 
+    }
+
+    /* ─── DASHBOARD ─────────────────────────────────────────────── */
+    #dashboard { display: none; padding: 24px 16px 80px; max-width: 1200px; margin: 0 auto; }
+
+    .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; gap: 16px; }
+    .dash-title h2 { font-family: var(--head); font-size: 1.6rem; font-weight: 800; line-height: 1.1; }
+    .dash-title p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    
+    .header-actions { display: flex; gap: 8px; }
+    .btn-secondary { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text); padding: 10px 16px; border-radius: 12px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 32px; }
+    @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+    
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; position: relative; overflow: hidden; }
+    .stat-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+    .stat-card.total::before { background: var(--accent); }
+    .stat-card.pending::before { background: var(--amber); }
+    .stat-card.approved::before { background: #3b82f6; }
+    .stat-card.checked::before { background: var(--green); }
+
+    .stat-card .label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block; }
+    .stat-card .value { font-family: var(--head); font-size: 1.5rem; font-weight: 800; }
+    @media (min-width: 768px) { .stat-card { padding: 24px; } .stat-card .value { font-size: 2rem; } }
+
+    /* Main Content Grid */
+    .main-grid { display: flex; flex-direction: column-reverse; gap: 32px; }
+    @media (min-width: 1000px) { .main-grid { display: grid; grid-template-columns: 1fr 350px; } }
+
+    /* Registry Box */
+    .registry-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; }
+    .registry-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 16px; }
+    @media (min-width: 600px) { .registry-header { flex-direction: row; align-items: center; justify-content: space-between; } }
+    
+    .search-wrap { position: relative; width: 100%; }
+    @media (min-width: 600px) { .search-wrap { max-width: 300px; } }
+    .search-wrap input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px 12px 42px; font-size: 14px; }
+    .search-wrap::before { content: '🔍'; position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--muted); }
+
+    /* Responsive Table to Cards */
+    .table-responsive { width: 100%; }
+    
+    @media (max-width: 650px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead tr { position: absolute; top: -9999px; left: -9999px; }
+      tr { border-bottom: 1px solid var(--border); padding: 16px; }
+      td { position: relative; padding: 8px 0 !important; border: none !important; }
+      td:not(:first-child) { padding-left: 40% !important; min-height: 24px; }
+      td::before {
+        position: absolute; left: 0; top: 8px; width: 35%; 
+        color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase;
+      }
+      td:nth-of-type(2)::before { content: "Status"; }
+      td:nth-of-type(3)::before { content: "Ref"; }
+      td:nth-of-type(4)::before { content: "Org"; }
+      td:nth-of-type(5)::before { content: "Actions"; }
+      
+      .row-actions { justify-content: flex-start; gap: 12px; }
+      .btn-icon { width: 44px; height: 44px; } /* Larger for touch */
+    }
+
+    /* Desktop Table Styles */
+    @media (min-width: 651px) {
+      table { width: 100%; border-collapse: collapse; font-size: 14px; }
+      th { text-align: left; padding: 16px 20px; background: rgba(255,255,255,0.02); color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
+      td { padding: 16px 20px; border-top: 1px solid var(--border); vertical-align: middle; }
+      tr:hover { background: rgba(255,255,255,0.01); }
+    }
+
+    .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; display: inline-block; }
+    .badge-pending { background: rgba(245,158,11,0.1); color: var(--amber); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-approved { background: rgba(59,130,246,0.1); color: #3b82f6; border: 1px solid rgba(59,130,246,0.2); }
+    .badge-checked  { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+
+    /* Side Column (Scanner) */
+    .side-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px; }
+    @media (min-width: 1000px) { .side-box { position: sticky; top: 24px; padding: 24px; } }
+    
+    .side-title { font-family: var(--head); font-size: 1.2rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+    #reader { width: 100%; border-radius: 16px; overflow: hidden; background: #000; border: 2px solid var(--border); aspect-ratio: 1; }
+    #scan-result { margin-top: 20px; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .res-card { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 12px; }
+    .res-status { font-family: var(--head); font-size: 13px; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+    .res-info { font-size: 14px; line-height: 1.6; }
+    .res-info strong { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: block; margin-top: 12px; }
+    .res-info span { color: var(--text); display: block; font-weight: 600; font-size: 15px; }
+
+    /* Action Buttons */
+    .row-actions { display: flex; gap: 8px; }
+    .btn-icon { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #fff; width: 36px; height: 36px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.2s; }
+    .btn-icon:hover { background: var(--accent); border-color: var(--accent); transform: scale(1.05); }
+
+    /* Loading Overlay */
+    #loading-overlay { position: fixed; inset: 0; background: rgba(10,10,15,0.9); z-index: 9999; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 20px; }
+    .spinner { width: 40px; height: 40px; border: 4px solid rgba(0, 137, 123, 0.2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+  </style>
+</head>
+<body>
+
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <div style="font-family:var(--head);font-size:14px;font-weight:700;letter-spacing:1px;color:var(--accent);">SYNCING...</div>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>HexaDashboard</h1>
+        <p>DroneXperience Workshop Portal</p>
+      </div>
+      
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter admin username" />
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter admin password" />
+      </div>
+
+      <button class="btn" id="login-btn" onclick="handleLogin()">Access Dashboard →</button>
+      <p class="login-error" id="login-error">⚠ Invalid credentials. Please try again.</p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    
+    <header class="dash-header">
+      <div class="dash-title">
+        <h2>Workshop Overview</h2>
+        <p>Managing <span id="event-name">DroneXperience 2026</span> Registry</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+        <button class="btn-secondary" onclick="logout()">LOGOUT</button>
+      </div>
+    </header>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <span class="label">Total Registered</span>
+        <span class="value" id="stat-total">0</span>
+      </div>
+      <div class="stat-card pending">
+        <span class="label">Pending Approval</span>
+        <span class="value" id="stat-pending">0</span>
+      </div>
+      <div class="stat-card approved">
+        <span class="label">Approved (Not In)</span>
+        <span class="value" id="stat-approved">0</span>
+      </div>
+      <div class="stat-card checked">
+        <span class="label">Checked In (At Venue)</span>
+        <span class="value" id="stat-checked">0</span>
+      </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="main-grid">
+      
+      <!-- Registry -->
+      <section class="registry-box">
+        <div class="registry-header">
+          <h3 style="font-family:var(--head);font-size:1.2rem;">Member Registry</h3>
+          <div class="search-wrap">
+            <input type="text" id="search-input" placeholder="Search by name, ID, or phone..." oninput="handleSearch()">
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table id="member-table">
+            <thead>
+              <tr>
+                <th>Member</th>
+                <th>Status</th>
+                <th>Payment Ref</th>
+                <th>Organization</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="member-tbody">
+              <!-- Rows injected here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Scanner -->
+      <aside class="side-box">
+        <h3 class="side-title">🚁 Venue Scanner</h3>
+        
+        <!-- Initial State -->
+        <div id="scanner-init">
+          <p style="color:var(--muted); font-size:13px; margin-bottom:20px; line-height:1.5;">Ready to check-in participants? Click below to start the camera.</p>
+          <button class="btn" onclick="toggleScanner(true)">Open Scanner 📷</button>
+        </div>
+
+        <!-- Camera State -->
+        <div id="scanner-wrap" style="display:none;">
+          <div id="reader"></div>
+          <button class="btn-secondary" style="width:100%; margin-top:12px;" onclick="toggleScanner(false)">Close Camera</button>
+        </div>
+        
+        <!-- Result State -->
+        <div id="scan-result" style="display:none;">
+          <div class="res-card" id="res-card">
+            <div class="res-status" id="res-status" style="margin-bottom:16px;">VALID TICKET</div>
+            <div class="res-info">
+              <strong>Participant Name</strong>
+              <span id="res-name">—</span>
+              <strong>Ticket ID</strong>
+              <span id="res-tid">—</span>
+              <strong>Organization</strong>
+              <span id="res-org">—</span>
+              
+              <div id="checkin-action-area" style="margin-top:20px; border-top:1px solid var(--border); padding-top:20px;">
+                <button class="btn" id="checkin-btn" onclick="doQuickCheckin()">Confirm Check-In ✓</button>
+              </div>
+            </div>
+          </div>
+          <button class="btn-secondary" style="width:100%;" onclick="resetScanner()">Scan Another</button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9eOCnmvuQv0uI-vDu4OlDtTjT6EIROBfmFTiH3tuBcF4gpjMqBhar2kJHBd9xqISm3Q/exec';
+    
+    let allMembers = [];
+    let currentUser = '';
+    let currentPass = '';
+    let html5QrCode = null;
+
+    /* ─── AUTH ───────────────────────────────────────────────────── */
+    async function handleLogin() {
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value.trim();
+      const loginBtn = document.getElementById('login-btn');
+      const errorMsg = document.getElementById('login-error');
+
+      if (!u || !p) return;
+      
+      loginBtn.disabled = true;
+      loginBtn.innerText = 'Verifying...';
+      errorMsg.style.display = 'none';
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'getAdminData', user: u, pass: p })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          currentUser = u;
+          currentPass = p;
+          allMembers = data.members;
+          renderStats(data.stats);
+          renderTable(data.members);
+          
+          document.getElementById('login-screen').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'block';
+          // startScanner(); // Removed auto-start
+        } else {
+          errorMsg.innerText = '⚠ ' + (data.message || 'Invalid Credentials');
+          errorMsg.style.display = 'block';
+        }
+      } catch (err) {
+        console.error('Admin Login Error:', err);
+        alert('Network Error: ' + err.message + '\n\nCheck if your Apps Script URL is correct and allowing Access to "Anyone".');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.innerText = 'Access Dashboard →';
+      }
+    }
+
+    function logout() {
+      if (html5QrCode) {
+        html5QrCode.stop().finally(() => location.reload());
+      } else {
+        location.reload();
+      }
+    }
+
+    /* ─── DATA RENDERING ─────────────────────────────────────────── */
+    function renderStats(stats) {
+      document.getElementById('stat-total').innerText    = stats.total;
+      document.getElementById('stat-pending').innerText  = stats.pending || 0;
+      document.getElementById('stat-approved').innerText = stats.approved || 0;
+      document.getElementById('stat-checked').innerText  = stats.checkedIn || 0;
+    }
+
+    function renderTable(members) {
+      const tbody = document.getElementById('member-tbody');
+      tbody.innerHTML = members.map(m => `
+        <tr>
+          <td>
+            <div style="font-weight:600;color:#fff;">${m.name}</div>
+            <div style="font-size:11px;color:var(--muted);">${m.ticketId}</div>
+          </td>
+          <td>${getStatusBadge(m.status)}</td>
+          <td><div style="font-family:monospace;font-size:12px;">${m.paymentRef || 'N/A'}</div></td>
+          <td style="color:var(--muted);">${m.org}</td>
+          <td>
+            <div class="row-actions">
+              ${m.screenshot ? `<a href="${m.screenshot}" target="_blank" class="btn-icon view" title="View Proof">🖼️</a>` : ''}
+              ${m.status === 'PendingApproval' ? `<button class="btn-icon" onclick="approveReg('${m.ticketId}')" title="Approve">✓</button>` : ''}
+              ${m.status === 'Approved' ? `<button class="btn-icon" onclick="checkinReg('${m.ticketId}')" title="Check-in">📡</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusBadge(status) {
+      if (status === 'PendingApproval') return `<span class="badge badge-pending">PENDING</span>`;
+      if (status === 'Approved') return `<span class="badge badge-approved">APPROVED</span>`;
+      if (status === 'Yes') return `<span class="badge badge-checked">CHECKED-IN</span>`;
+      return `<span class="badge" style="background:rgba(255,255,255,0.05);">${status}</span>`;
+    }
+
+    function handleSearch() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      const filtered = allMembers.filter(m => 
+        m.name.toLowerCase().includes(q) || 
+        m.ticketId.toLowerCase().includes(q) || 
+        m.org.toLowerCase().includes(q)
+      );
+      renderTable(filtered);
+    }
+
+    async function refreshData() {
+      document.getElementById('loading-overlay').style.display = 'flex';
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'getAdminData', user: currentUser, pass: currentPass })
+        });
+        const data = await res.json();
+        if (data.success) {
+          allMembers = data.members;
+          renderStats(data.stats);
+          renderTable(data.members);
+        }
+      } catch (err) {}
+      document.getElementById('loading-overlay').style.display = 'none';
+    }
+
+    /* ─── ACTIONS ─────────────────────────────────────────────────── */
+    async function approveReg(ticketId) {
+      if (!confirm(`Approve ${ticketId}?`)) return;
+      showLoading(true);
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'approve', ticketId, adminName: currentUser })
+        });
+        const data = await res.json();
+        if (data.success) refreshData();
+        else alert(data.message);
+      } catch (err) { alert('Network Error'); }
+      showLoading(false);
+    }
+
+    async function checkinReg(ticketId) {
+      if (!confirm(`Check-in ${ticketId}?`)) return;
+      showLoading(true);
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'checkin', ticketId, volunteerName: currentUser })
+        });
+        const data = await res.json();
+        if (data.success) refreshData();
+        else alert(data.message);
+      } catch (err) { alert('Network Error'); }
+      showLoading(false);
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
+    }
+
+    /* ─── SCANNER ───────────────────────────────────────────────── */
+    function toggleScanner(show) {
+      const initBox = document.getElementById('scanner-init');
+      const wrapBox = document.getElementById('scanner-wrap');
+      const resBox  = document.getElementById('scan-result');
+
+      if (show) {
+        initBox.style.display = 'none';
+        resBox.style.display  = 'none';
+        wrapBox.style.display = 'block';
+        startScanner();
+      } else {
+        if (html5QrCode) {
+          html5QrCode.stop().then(() => {
+            wrapBox.style.display = 'none';
+            initBox.style.display = 'block';
+          });
+        } else {
+          wrapBox.style.display = 'none';
+          initBox.style.display = 'block';
+        }
+      }
+    }
+
+    function startScanner() {
+      const config = { fps: 10, qrbox: { width: 200, height: 200 } };
+      if (!html5QrCode) {
+        html5QrCode = new Html5Qrcode("reader");
+      }
+      html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess);
+    }
+
+    async function onScanSuccess(decodedText) {
+      const ticketId = decodedText.trim().toUpperCase();
+      const member = allMembers.find(m => m.ticketId === ticketId);
+      
+      const resBox = document.getElementById('scan-result');
+      const wrapBox = document.getElementById('scanner-wrap');
+      const statusLbl = document.getElementById('res-status');
+      const checkinBtn = document.getElementById('checkin-btn');
+
+      // Stop camera temporarily
+      if (html5QrCode) await html5QrCode.stop();
+      
+      wrapBox.style.display = 'none';
+      resBox.style.display = 'block';
+
+      if (!member) {
+        statusLbl.innerText = 'INVALID TICKET';
+        statusLbl.style.color = 'var(--red)';
+        document.getElementById('res-name').innerText = 'Not Found';
+        document.getElementById('res-tid').innerText = ticketId;
+        document.getElementById('res-org').innerText = '—';
+        document.getElementById('checkin-action-area').style.display = 'none';
+      } else {
+        document.getElementById('res-name').innerText = member.name;
+        document.getElementById('res-tid').innerText = member.ticketId;
+        document.getElementById('res-org').innerText = member.org;
+        document.getElementById('checkin-action-area').style.display = 'block';
+        
+        if (member.status === 'Yes') {
+          statusLbl.innerText = 'ALREADY CHECKED-IN';
+          statusLbl.style.color = 'var(--amber)';
+          checkinBtn.style.display = 'none';
+        } else if (member.status === 'PendingApproval') {
+          statusLbl.innerText = 'PAYMENT PENDING';
+          statusLbl.style.color = 'var(--amber)';
+          checkinBtn.style.display = 'none';
+        } else {
+          statusLbl.innerText = 'VALID TICKET';
+          statusLbl.style.color = 'var(--green)';
+          checkinBtn.style.display = 'block';
+        }
+      }
+    }
+
+    function resetScanner() {
+      document.getElementById('scan-result').style.display = 'none';
+      toggleScanner(true);
+    }
+
+    async function doQuickCheckin() {
+      const tid = document.getElementById('res-tid').innerText;
+      await checkinReg(tid);
+      resetScanner();
+    }
+
+  </script>
+</body>
+</html>

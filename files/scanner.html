@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticket Scanner — Volunteer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <!-- html5-qrcode CDN -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg:       #0a0a0f;
+      --surface:  #161b22;
+      --border:   rgba(255, 255, 255, 0.1);
+      --accent:   #00897b;
+      --accent-glow: rgba(0, 137, 123, 0.3);
+      --text:     #f8fafc;
+      --muted:    #94a3b8;
+      --green:    #10b981;
+      --red:      #ef4444;
+      --yellow:   #f59e0b;
+      --radius:   20px;
+      --font-head: 'Syne', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 50% 40% at 50% 0%, rgba(0, 137, 123, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+
+    /* ─── HEADER ─────────────────────────────── */
+    .scanner-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .vol-badge {
+      display: inline-block;
+      background: rgba(0, 137, 123, 0.1);
+      border: 1px solid var(--accent);
+      color: #4db6ac;
+      font-family: var(--font-head);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 16px;
+    }
+    .scanner-header h1 {
+      font-family: var(--font-head);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .scanner-header p {
+      color: var(--muted);
+      font-size: 15px;
+      margin-top: 8px;
+    }
+
+    /* ─── CARD ───────────────────────────────── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+    }
+
+    /* ─── GATE (access code) ─────────────────── */
+    #gate-section {}
+    .gate-title {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .gate-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .input-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    input[type=text], input[type=password] {
+      width: 100%;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input::placeholder { color: var(--muted); }
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,.18);
+    }
+    .input-error { border-color: var(--red) !important; }
+
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px var(--accent-glow); opacity: 0.9; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .gate-error {
+      font-size: 13px;
+      color: var(--red);
+      margin-top: 10px;
+      display: none;
+    }
+
+    /* ─── TABS ───────────────────────────────── */
+    .tabs {
+      display: flex; gap: 10px; margin-bottom: 24px;
+      background: var(--surface); padding: 5px; border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .tab {
+      flex: 1; padding: 10px; text-align: center; border-radius: 8px;
+      font-family: var(--font-head); font-size: 13px; font-weight: 700;
+      cursor: pointer; color: var(--muted); transition: all .2s;
+    }
+    .tab.active { background: var(--accent); color: #fff; }
+
+    /* ─── APPROVAL LIST ──────────────────────── */
+    #approvals-section { display: none; }
+    .pending-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 18px; margin-bottom: 16px;
+      animation: fadeUp .3s ease;
+    }
+    .pending-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .pending-name { font-family: var(--font-head); font-size: 1.05rem; font-weight: 700; }
+    .pending-id { font-size: 11px; color: var(--accent); font-weight: 700; letter-spacing: .05em; margin-top: 2px; }
+    .pending-meta { font-size: 13px; color: var(--muted); line-height: 1.5; }
+    .pending-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-view-proof {
+      flex: 1; padding: 10px; background: rgba(108,99,255,0.1);
+      border: 1px solid rgba(108,99,255,0.3); color: var(--accent);
+      border-radius: 8px; font-size: 12px; font-weight: 600; text-decoration: none; text-align: center;
+    }
+    .btn-approve {
+      flex: 1; padding: 10px; background: var(--green); color: #0a0a0f;
+      border: none; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .empty-msg { text-align: center; color: var(--muted); padding: 40px 20px; font-size: 14px; }
+
+    /* ─── SCANNER SECTION ────────────────────── */
+    #scanner-section { display: none; }
+    .vol-info-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(108,99,255,.08);
+      border: 1px solid rgba(108,99,255,.2);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+    .vol-info-bar strong { color: var(--accent); }
+    .btn-logout {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 12px;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .scan-box-wrap {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      margin-bottom: 24px;
+      position: relative;
+      background: #000;
+    }
+    /* Overlay corners */
+    .scan-box-wrap::before, .scan-box-wrap::after {
+      content: '';
+      position: absolute;
+      width: 36px; height: 36px;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .scan-box-wrap::before {
+      top: 12px; left: 12px;
+      border-top: 3px solid var(--accent);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px 0 0 0;
+    }
+    .scan-box-wrap::after {
+      bottom: 12px; right: 12px;
+      border-bottom: 3px solid var(--accent);
+      border-right: 3px solid var(--accent);
+      border-radius: 0 0 4px 0;
+    }
+    #reader { width: 100%; }
+
+    /* scan line animation */
+    .scan-line {
+      position: absolute;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      animation: scanline 2s ease-in-out infinite;
+      z-index: 5;
+      pointer-events: none;
+    }
+    @keyframes scanline {
+      0%   { top: 10%; opacity: 1; }
+      50%  { top: 90%; opacity: 1; }
+      100% { top: 10%; opacity: 1; }
+    }
+
+    .manual-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .manual-row input { flex: 1; }
+    .btn-manual {
+      padding: 13px 18px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--font-head);
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color .2s;
+    }
+    .btn-manual:hover { border-color: var(--accent); }
+
+    .scan-status {
+      font-size: 13px;
+      color: var(--muted);
+      text-align: center;
+      min-height: 22px;
+      margin-bottom: 16px;
+    }
+
+    /* ─── RESULT CARD ────────────────────────── */
+    #result-card { display: none; }
+    #result-card.show {
+      display: block;
+      animation: fadeUp .35s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-inner {
+      border-radius: 14px;
+      padding: 22px 22px 20px;
+      border: 2px solid transparent;
+    }
+    .result-inner.green { background: rgba(61,214,140,.07); border-color: rgba(61,214,140,.35); }
+    .result-inner.red   { background: rgba(255,107,107,.07); border-color: rgba(255,107,107,.3); }
+    .result-inner.yellow{ background: rgba(245,200,66,.07); border-color: rgba(245,200,66,.3); }
+
+    .result-status-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .status-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .status-dot.green  { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .status-dot.red    { background: var(--red);   box-shadow: 0 0 8px var(--red); }
+    .status-dot.yellow { background: var(--yellow);box-shadow: 0 0 8px var(--yellow); }
+
+    .status-label {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .status-label.green  { color: var(--green); }
+    .status-label.red    { color: var(--red); }
+    .status-label.yellow { color: var(--yellow); }
+
+    .result-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .result-field small {
+      display: block;
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .result-field span {
+      font-size: 14px;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .result-field.full { grid-column: 1 / -1; }
+
+    .btn-checkin {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--green), #22c55e);
+      color: #0a0a0f;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--font-head);
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s;
+    }
+    .btn-checkin:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-checkin:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    .btn-reset {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: transparent;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      font-family: var(--font-head);
+      font-size: 14px;
+      cursor: pointer;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-reset:hover { border-color: var(--accent); color: var(--text); }
+
+    /* spinner */
+    .spin-sm {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,.2);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    footer {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 40px;
+    }
+
+    @media (max-width: 500px) {
+      .page-wrap { padding: 24px 16px 48px; }
+      .scanner-header h1 { font-size: 1.8rem; }
+      .card { padding: 24px 20px; border-radius: 16px; }
+      .btn { padding: 18px; font-size: 15px; }
+      .result-info-grid { grid-template-columns: 1fr; gap: 10px; }
+      .result-inner { padding: 18px; }
+      .scan-box-wrap { border-radius: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <header class="scanner-header">
+    <div class="vol-badge">🔒 Volunteer Portal</div>
+    <h1>Ticket Scanner</h1>
+    <p>Scan QR codes to check in participants</p>
+  </header>
+
+  <!-- GATE: access code + name -->
+  <div id="gate-section">
+    <div class="card">
+      <p class="gate-title">Volunteer Access</p>
+      <p class="gate-sub">Enter the access code and your name to continue.</p>
+
+      <div class="input-group">
+        <label for="access-code">Access Code</label>
+        <input type="password" id="access-code" placeholder="Enter code" autocomplete="off" />
+      </div>
+
+      <div class="input-group">
+        <label for="vol-name">Your Name</label>
+        <input type="text" id="vol-name" placeholder="e.g. Priya" />
+      </div>
+
+      <button class="btn" onclick="unlock()">Continue →</button>
+      <p class="gate-error" id="gate-error"></p>
+    </div>
+  </div>
+
+  <!-- MAIN PORTAL (Appears after gate) -->
+  <div id="main-portal" style="display:none;">
+    
+    <div class="vol-info-bar">
+      <span>Volunteer: <strong id="display-vol-name">—</strong></span>
+      <button class="btn-logout" onclick="logout()">Log out</button>
+    </div>
+
+
+      <!-- Manual entry -->
+      <div class="manual-row">
+        <input type="text" id="manual-id" placeholder="Or type Ticket ID manually (e.g. WKSHP-0042)" />
+        <button class="btn-manual" onclick="manualLookup()">Go</button>
+      </div>
+
+      <p class="scan-status" id="scan-status">Scanning for QR code…</p>
+    </div>
+
+    <!-- RESULT CARD -->
+    <div id="result-card">
+      <div class="result-inner" id="result-inner">
+        <div class="result-status-row">
+          <div class="status-dot" id="r-dot"></div>
+          <div class="status-label" id="r-label">—</div>
+        </div>
+        <div class="result-info-grid">
+          <div class="result-field">
+            <small>Name</small>
+            <span id="r-name">—</span>
+          </div>
+          <div class="result-field">
+            <small>Ticket ID</small>
+            <span id="r-tid">—</span>
+          </div>
+          <div class="result-field">
+            <small>Organization</small>
+            <span id="r-org">—</span>
+          </div>
+          <div class="result-field">
+            <small>Phone</small>
+            <span id="r-phone">—</span>
+          </div>
+          <div class="result-field full" id="r-extra-wrap" style="display:none;">
+            <small id="r-extra-label">Info</small>
+            <span id="r-extra">—</span>
+          </div>
+        </div>
+        <button class="btn-checkin" id="checkin-btn" style="display:none;" onclick="doCheckin()">
+          ✓ Check In This Participant
+        </button>
+        <button class="btn-reset" onclick="resetScanner()">⟳ Scan Next Ticket</button>
+      </div>
+    </div>
+
+  </div><!-- /scanner-section -->
+
+  <footer>Workshop 2025 &nbsp;·&nbsp; Volunteer Scanning Portal</footer>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════
+   CONFIGURATION
+════════════════════════════════════════════════ */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9eOCnmvuQv0uI-vDu4OlDtTjT6EIROBfmFTiH3tuBcF4gpjMqBhar2kJHBd9xqISm3Q/exec';
+const ACCESS_CODE = 'DRONE2026';  // Change this to your desired code
+
+/* ════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════ */
+let volunteerName = '';
+let currentTicketId = '';
+let html5QrCode = null;
+let scannerStarted = false;
+let scanCooldown = false;
+
+/* ════════════════════════════════════════════════
+   GATE
+════════════════════════════════════════════════ */
+function unlock() {
+  const code = document.getElementById('access-code').value.trim();
+  const name = document.getElementById('vol-name').value.trim();
+  const errEl = document.getElementById('gate-error');
+
+  if (code !== ACCESS_CODE) {
+    errEl.textContent = '⚠ Incorrect access code.';
+    errEl.style.display = 'block';
+    document.getElementById('access-code').classList.add('input-error');
+    return;
+  }
+  if (!name) {
+    errEl.textContent = '⚠ Please enter your name.';
+    errEl.style.display = 'block';
+    document.getElementById('vol-name').classList.add('input-error');
+    return;
+  }
+
+  volunteerName = name;
+  document.getElementById('gate-section').style.display = 'none';
+  document.getElementById('main-portal').style.display = 'block';
+  document.getElementById('display-vol-name').textContent = name;
+  switchTab('scan');
+}
+
+function switchTab(tabId) {
+  const scanSec = document.getElementById('scanner-section');
+  const apprSec = document.getElementById('approvals-section');
+  const tScan   = document.getElementById('tab-scan');
+  const tAppr   = document.getElementById('tab-approve');
+
+  if (tabId === 'scan') {
+    scanSec.style.display = 'block';
+    apprSec.style.display = 'none';
+    tScan.classList.add('active');
+    tAppr.classList.remove('active');
+    if (!scannerStarted) startScanner();
+  } else {
+    scanSec.style.display = 'none';
+    apprSec.style.display = 'block';
+    tScan.classList.remove('active');
+    tAppr.classList.add('active');
+    fetchPending();
+  }
+}
+
+function logout() {
+  if (html5QrCode && scannerStarted) {
+    html5QrCode.stop().catch(() => {});
+    scannerStarted = false;
+  }
+  document.getElementById('main-portal').style.display = 'none';
+  document.getElementById('gate-section').style.display = 'block';
+  document.getElementById('access-code').value = '';
+  document.getElementById('vol-name').value = '';
+  volunteerName = '';
+  resetScanner();
+}
+
+/* ════════════════════════════════════════════════
+   APPROVAL LOGIC
+════════════════════════════════════════════════ */
+async function fetchPending() {
+  const listEl = document.getElementById('pending-list');
+  const countEl = document.getElementById('pending-count');
+  
+  try {
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=getPending`);
+    const data = await res.json();
+
+    if (!data.success || !data.pending || data.pending.length === 0) {
+      listEl.innerHTML = '<div class="empty-msg">No pending registrations found.</div>';
+      countEl.style.display = 'none';
+      return;
+    }
+
+    countEl.textContent = data.pending.length;
+    countEl.style.display = 'inline-block';
+    
+    listEl.innerHTML = data.pending.map(p => `
+      <div class="pending-card">
+        <div class="pending-header">
+          <div>
+            <div class="pending-name">${p.name}</div>
+            <div class="pending-id">${p.ticketId}</div>
+          </div>
+          <div style="font-size:10px; color:var(--muted);">${new Date(p.timestamp).toLocaleDateString()}</div>
+        </div>
+        <div class="pending-meta">
+          <div>Email: ${p.email}</div>
+          <div>Org: ${p.org}</div>
+          <div style="margin-top:4px; font-size:11px; color:var(--yellow);">Ref: ${p.paymentRef}</div>
+        </div>
+        <div class="pending-actions">
+          <a href="${p.screenshot}" target="_blank" class="btn-view-proof">🖼️ View Proof</a>
+          <button class="btn-approve" onclick="approveReg('${p.ticketId}', this)">✓ Approve</button>
+        </div>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    listEl.innerHTML = '<div class="empty-msg" style="color:var(--red);">Error loading approvals.</div>';
+  }
+}
+
+async function approveReg(ticketId, btn) {
+  if (!confirm(`Approve registration for ${ticketId}? This will send the ticket QR code via email.`)) return;
+
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin-sm"></span>...';
+
+  try {
+    const payload = { action: 'approve', ticketId, adminName: volunteerName };
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      fetchPending(); // Refresh list
+    } else {
+      alert('Approval failed: ' + data.message);
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
+  } catch (err) {
+    alert('Network error during approval.');
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+/* ════════════════════════════════════════════════
+   SCANNER
+════════════════════════════════════════════════ */
+function startScanner() {
+  html5QrCode = new Html5Qrcode('reader');
+  const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+  html5QrCode.start(
+    { facingMode: 'environment' },
+    config,
+    onScanSuccess,
+    onScanError
+  ).then(() => {
+    scannerStarted = true;
+    setStatus('Scanning for QR code…');
+  }).catch(err => {
+    setStatus('⚠ Camera access denied. Use manual entry below.');
+    console.error(err);
+  });
+}
+
+function onScanSuccess(decodedText) {
+  if (scanCooldown) return;
+  scanCooldown = true;
+  setTimeout(() => { scanCooldown = false; }, 3000);
+
+  setStatus('QR code detected: ' + decodedText);
+  lookupTicket(decodedText.trim());
+}
+
+function onScanError() { /* ignore frame errors */ }
+
+function setStatus(msg) {
+  document.getElementById('scan-status').textContent = msg;
+}
+
+/* ════════════════════════════════════════════════
+   MANUAL LOOKUP
+════════════════════════════════════════════════ */
+function manualLookup() {
+  const val = document.getElementById('manual-id').value.trim().toUpperCase();
+  if (!val) return;
+  lookupTicket(val);
+}
+
+/* ════════════════════════════════════════════════
+   TICKET LOOKUP (doGet)
+════════════════════════════════════════════════ */
+async function lookupTicket(ticketId) {
+  currentTicketId = ticketId;
+  setStatus('Looking up ticket ' + ticketId + '…');
+  hideResult();
+
+  try {
+    const url = `${APPS_SCRIPT_URL}?ticketId=${encodeURIComponent(ticketId)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.found) {
+      showResult('yellow', ticketId, null, null);
+      return;
+    }
+
+    if (data.checkedIn === 'Yes') {
+      showResult('red', ticketId, data, null);
+    } else {
+      showResult('green', ticketId, data, null);
+    }
+
+  } catch (err) {
+    setStatus('⚠ Network error. Check your connection.');
+    console.error(err);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   CHECK IN (doPost)
+════════════════════════════════════════════════ */
+async function doCheckin() {
+  const btn = document.getElementById('checkin-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin-sm"></span> Checking in…';
+
+  try {
+    const payload = {
+      action:        'checkin',
+      ticketId:      currentTicketId,
+      volunteerName: volunteerName,
+    };
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method:  'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body:    JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      // re-fetch to show confirmed state
+      await lookupTicket(currentTicketId);
+    } else if (data.reason === 'already_checked_in') {
+      setStatus('Already checked in!');
+      await lookupTicket(currentTicketId);
+    } else {
+      setStatus('⚠ Check-in failed: ' + (data.message || 'Unknown error'));
+      btn.disabled = false;
+      btn.innerHTML = '✓ Check In This Participant';
+    }
+  } catch (err) {
+    setStatus('⚠ Network error during check-in.');
+    btn.disabled = false;
+    btn.innerHTML = '✓ Check In This Participant';
+  }
+}
+
+/* ════════════════════════════════════════════════
+   RESULT DISPLAY
+════════════════════════════════════════════════ */
+function showResult(color, ticketId, data, extra) {
+  const card    = document.getElementById('result-card');
+  const inner   = document.getElementById('result-inner');
+  const dot     = document.getElementById('r-dot');
+  const label   = document.getElementById('r-label');
+  const checkinBtn = document.getElementById('checkin-btn');
+  const extraWrap  = document.getElementById('r-extra-wrap');
+
+  // Reset classes
+  inner.className = 'result-inner ' + color;
+  dot.className   = 'status-dot ' + color;
+  label.className = 'status-label ' + color;
+
+  if (color === 'green') {
+    label.textContent = '✓ Valid — Not Yet Checked In';
+    checkinBtn.style.display = 'block';
+    checkinBtn.disabled = false;
+    checkinBtn.innerHTML = '✓ Check In This Participant';
+    extraWrap.style.display = 'none';
+  } else if (color === 'red') {
+    label.textContent = '✕ Already Checked In';
+    checkinBtn.style.display = 'none';
+    if (data && data.checkinTime) {
+      document.getElementById('r-extra-label').textContent = 'Check-in Info';
+      document.getElementById('r-extra').textContent =
+        `${data.checkinTime} by ${data.checkedBy || '—'}`;
+      extraWrap.style.display = 'block';
+    }
+  } else {
+    label.textContent = '⚠ Ticket ID Not Found';
+    checkinBtn.style.display = 'none';
+    extraWrap.style.display = 'none';
+  }
+
+  document.getElementById('r-tid').textContent   = ticketId;
+  document.getElementById('r-name').textContent  = data ? data.name  : '—';
+  document.getElementById('r-org').textContent   = data ? data.org   : '—';
+  document.getElementById('r-phone').textContent = data ? data.phone : '—';
+
+  card.classList.remove('show');
+  void card.offsetWidth; // force reflow
+  card.classList.add('show');
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  setStatus('Done. Ready for next scan.');
+}
+
+function hideResult() {
+  document.getElementById('result-card').classList.remove('show');
+}
+
+function resetScanner() {
+  hideResult();
+  currentTicketId = '';
+  document.getElementById('manual-id').value = '';
+  setStatus('Scanning for QR code…');
+  scanCooldown = false;
+}
+</script>
+</body>
+</html>

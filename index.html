@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DroneXperience 2026 — Build, Fly & Innovate</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #00897b;
+      --primary-dark: #005c4b;
+      --bg: #0a0a0f;
+      --surface: rgba(30, 41, 59, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --head: 'Syne', sans-serif;
+      --body: 'Inter', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--body);
+      background-color: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Cinematic Background */
+    .hero-bg {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+      background: url('file:///C:/Users/areoj/.gemini/antigravity/brain/c5d5dfbc-dcf2-445c-b511-2a3fc1d28bcb/dronexperience_hero_bg_1774969582756.png') center/cover no-repeat;
+      filter: brightness(0.4) saturate(1.2);
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 0%, var(--bg) 90%);
+    }
+
+    /* Main Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 32px 0;
+    }
+    .logo-group { display: flex; gap: 20px; align-items: center; }
+    .logo-group span { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 0 120px;
+      text-align: left;
+      max-width: 700px;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(0, 137, 123, 0.2);
+      border: 1px solid var(--primary);
+      color: #4db6ac;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-family: var(--head);
+      font-size: clamp(3rem, 8vw, 4.5rem);
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    h1 span { color: var(--primary); }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* Action Grid */
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 80px;
+    }
+    .portal-card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    .portal-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--primary);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    .portal-card h3 { font-family: var(--head); font-size: 24px; margin-bottom: 12px; }
+    .portal-card p { color: var(--text-muted); font-size: 14px; line-height: 1.5; }
+    .portal-card .icon { font-size: 48px; margin-bottom: 24px; display: block; }
+    .btn-link {
+      display: inline-flex;
+      margin-top: 24px;
+      font-weight: 700;
+      color: var(--primary);
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Information Section */
+    .info-section {
+      background: #0f172a;
+      padding: 80px 0;
+      border-radius: 32px;
+      margin-bottom: 80px;
+      border: 1px solid var(--border);
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+    }
+    .info-box h4 {
+      color: var(--primary);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .info-box p { font-size: 16px; color: var(--text); }
+
+    footer {
+      padding: 40px 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate { animation: fadeIn 0.8s ease-out forwards; }
+    .delay-1 { animation-delay: 0.2s; }
+    .delay-2 { animation-delay: 0.4s; }
+  </style>
+</head>
+<body>
+
+  <div class="hero-bg"></div>
+
+  <div class="container">
+    <header>
+      <div class="logo-group">
+        <span>HEXA DYNAMICS</span>
+      </div>
+      <div>
+        <div class="info-item" style="font-weight: 600; font-size: 14px;">20th - 21st April 2026</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero animate">
+        <div class="badge">✦ Build, Fly & Innovate</div>
+        <h1>Drone<br/><span>Xperience</span></h1>
+        <p>A group of passionate aeronautical engineers founded Aero Knotz. Join us to learn about drone technology and start your journey in tech-driven innovation.</p>
+      </section>
+
+      <div class="action-grid">
+        <a href="files/index.html" class="portal-card animate delay-1">
+          <span class="icon">🚀</span>
+          <h3>Register Now</h3>
+          <p>Sign up as a participant to receive your official QR ticket. Certificated provided!</p>
+          <div class="btn-link">Proceed to Registration →</div>
+        </a>
+
+        <a href="files/admin.html" class="portal-card animate delay-2">
+          <span class="icon">💼</span>
+          <h3>Admin Dashboard</h3>
+          <p>Individual login for volunteers to manage approvals, track statistics, and check-in participants.</p>
+          <div class="btn-link">Access Dashboard →</div>
+        </a>
+      </div>
+
+      <section class="info-section animate" style="animation-delay: 0.6s;">
+        <div class="container">
+          <div class="grid-4">
+            <div class="info-box">
+              <h4>Venue</h4>
+              <p>TP2 - CLS 711</p>
+            </div>
+            <div class="info-box">
+              <h4>Fee</h4>
+              <p>Rs. 600/-</p>
+            </div>
+            <div class="info-box">
+              <h4>Deadline</h4>
+              <p>Verify on Portal</p>
+            </div>
+            <div class="info-box">
+              <h4>Perks</h4>
+              <p>Certificates + Internships for top 3</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      &copy; 2026 DroneXperience &nbsp;·&nbsp; In association with Aero Knotz Drones India Private Limited
+    </footer>
+  </div>
+
+</body>
+</html>
