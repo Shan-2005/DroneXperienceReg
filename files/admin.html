@@ -196,26 +196,19 @@
     .logo-banner-wrap {
       width: 100%;
       background: transparent;
-      padding: 0;
+      padding: 16px 0 0;
       text-align: center;
       position: relative;
       z-index: 1000;
     }
-    .logo-banner-wrap::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent), #4db6ac);
-    }
+    .logo-banner-wrap::after { display: none; }
     .logo-banner-img {
-      width: 100%;
+      max-width: 85%;
       height: auto;
-      max-height: 80px;
-      object-fit: cover;
-      display: block;
+      max-height: 42px;
+      border-radius: 12px;
+      box-shadow: 0 4px 30px rgba(0, 137, 123, 0.2);
+      display: inline-block;
     }
   </style>
 </head>
