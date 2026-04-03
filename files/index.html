@@ -214,7 +214,8 @@
       transition: all .2s;
     }
     .upi-app-btn:hover { border-color: var(--accent); background: rgba(0, 137, 123, 0.05); transform: translateX(4px); }
-    .upi-app-btn .app-icon { font-size: 28px; line-height: 1; }
+    .upi-app-btn .app-icon { font-size: 28px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 32px; }
+    .upi-logo { width: 32px; height: 32px; object-fit: contain; }
     .upi-app-btn .app-name { flex: 1; }
     .upi-app-btn .app-arrow { color: var(--muted); font-size: 20px; }
 
@@ -442,17 +443,17 @@
         <!-- Mobile: UPI app buttons (shown on small screens) -->
         <div class="upi-btns" id="mobile-pay">
           <a href="#" class="upi-app-btn" id="gpay-btn">
-            <span class="app-icon"><i class="fab fa-google-pay" style="color:#4285F4;"></i></span>
+            <span class="app-icon"><img src="https://raw.githubusercontent.com/google-pay/google-pay-button/main/branding/logos/google_pay_logo.svg" class="upi-logo" alt="GPay"></span>
             <span class="app-name">Google Pay</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="phonepe-btn">
-            <span class="app-icon"><i class="fas fa-wallet" style="color:#6739b7;"></i></span>
+            <span class="app-icon"><img src="https://www.vectorlogo.zone/logos/phonepe/phonepe-icon.svg" class="upi-logo" alt="PhonePe"></span>
             <span class="app-name">PhonePe</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="paytm-btn">
-            <span class="app-icon"><i class="fas fa-university" style="color:#00baf2;"></i></span>
+            <span class="app-icon"><img src="https://www.vectorlogo.zone/logos/paytm/paytm-icon.svg" class="upi-logo" alt="Paytm"></span>
             <span class="app-name">Paytm</span>
             <span class="app-arrow">→</span>
           </a>
