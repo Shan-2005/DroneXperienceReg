@@ -7,6 +7,7 @@
   <meta name="description" content="Register for DroneXperience 2026 Workshop and pay securely via UPI." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
       --bg:       #0a0a0f;
@@ -335,10 +336,9 @@
     <span class="step-lbl" id="lbl3">Ticket</span>
   </div>
 
-  <!-- ═══ STEP 1 — DETAILS ═══ -->
   <div id="step1" class="step-section active step-details">
     <div class="card">
-      <p class="form-title">📝 Your Details</p>
+      <p class="form-title"><i class="fas fa-user-edit" style="color:var(--accent); margin-right:8px;"></i> Your Details</p>
 
       <div class="form-group">
         <label for="name">Full Name</label>
@@ -398,7 +398,7 @@
   <!-- ═══ STEP 2 — PAYMENT ═══ -->
   <div id="step2" class="step-section step-payment">
     <div class="card">
-      <p class="form-title">💳 Complete Payment</p>
+      <p class="form-title"><i class="fas fa-credit-card" style="color:var(--gold); margin-right:8px;"></i> Complete Payment</p>
 
       <!-- Amount -->
       <div class="amount-badge">
@@ -411,7 +411,7 @@
       <div class="note-chip" id="note-chip">
         <span class="key">Payment Note / Remark:</span>
         <span class="val" id="ticket-id-display">—</span>
-        <span class="copy-note" onclick="copyNote()" title="Copy note">📋</span>
+        <span class="copy-note" onclick="copyNote()" title="Copy note"><i class="fas fa-copy"></i></span>
       </div>
 
       <!-- UPI ID bar -->
@@ -428,22 +428,22 @@
         <!-- Mobile: UPI app buttons (shown on small screens) -->
         <div class="upi-btns" id="mobile-pay">
           <a href="#" class="upi-app-btn" id="gpay-btn">
-            <span class="app-icon">🟢</span>
+            <span class="app-icon"><i class="fab fa-google-pay" style="color:#4285F4;"></i></span>
             <span class="app-name">Google Pay</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="phonepe-btn">
-            <span class="app-icon">🟣</span>
+            <span class="app-icon"><i class="fas fa-wallet" style="color:#6739b7;"></i></span>
             <span class="app-name">PhonePe</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="paytm-btn">
-            <span class="app-icon">🔵</span>
+            <span class="app-icon"><i class="fas fa-university" style="color:#00baf2;"></i></span>
             <span class="app-name">Paytm</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="generic-btn">
-            <span class="app-icon">📲</span>
+            <span class="app-icon"><i class="fas fa-mobile-alt"></i></span>
             <span class="app-name">Any UPI App</span>
             <span class="app-arrow">→</span>
           </a>
@@ -459,10 +459,10 @@
 
       <!-- Upload payment screenshot -->
       <div class="upload-section">
-        <div class="upload-title">📤 Upload Payment Screenshot</div>
+        <div class="upload-title"><i class="fas fa-file-upload" style="margin-right:6px;"></i> Upload Payment Screenshot</div>
         <div class="upload-drop" id="upload-drop">
           <input type="file" id="payment-screenshot" accept="image/*" onchange="handleUpload(this)" />
-          <div class="upload-icon">🖼️</div>
+          <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
           <div class="upload-text">Tap to select your payment screenshot</div>
           <div class="upload-hint">JPG, PNG, WebP — max 5 MB</div>
         </div>
@@ -475,17 +475,16 @@
       <div class="global-error" id="pay-error"></div>
 
       <button class="btn btn-success" style="margin-top:20px;" id="btn-submit" onclick="submitRegistration()">
-        <span class="btn-text">✓ Confirm Payment &amp; Register</span>
+        <span class="btn-text"><i class="fas fa-check-circle" style="margin-right:8px;"></i> Confirm Payment &amp; Register</span>
         <span class="spinner"></span>
       </button>
       <button class="btn btn-outline" onclick="goToStep(1)">← Back to Details</button>
     </div>
   </div>
 
-  <!-- ═══ STEP 3 — PENDING REVIEW ═══ -->
   <div id="step3" class="step-section step-ticket">
     <div class="success-msg">
-      <div class="check-icon" style="border-color: var(--gold); background: rgba(245,200,66,0.1); font-size: 28px;">⏳</div>
+      <div class="check-icon" style="border-color: var(--gold); background: rgba(245,200,66,0.1); font-size: 28px;"><i class="fas fa-hourglass-half"></i></div>
       <h2 style="color: var(--gold);">Payment Under Review</h2>
       <p>We've received your registration and payment proof.</p>
     </div>
@@ -637,7 +636,7 @@ function handleUpload(input) {
   reader.onload = e => {
     screenshotB64 = e.target.result;
     document.getElementById('preview-img').src = screenshotB64;
-    document.getElementById('preview-name').textContent = '✓ ' + file.name;
+    document.getElementById('preview-name').innerHTML = '<i class="fas fa-check-circle"></i> ' + file.name;
     document.getElementById('upload-preview').style.display = 'block';
   };
   reader.readAsDataURL(file);
@@ -659,14 +658,14 @@ drop.addEventListener('drop', e => {
 function copyUPI() {
   navigator.clipboard.writeText(UPI_ID).then(() => {
     const btn = document.querySelector('.copy-btn');
-    btn.textContent = '✓ Copied!'; btn.style.color = 'var(--green)';
+    btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; btn.style.color = 'var(--green)';
     setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
   });
 }
 function copyNote() {
   navigator.clipboard.writeText(tempTicketId).then(() => {
     const el = document.querySelector('.copy-note');
-    el.textContent = '✅'; setTimeout(() => el.textContent = '📋', 1500);
+    el.innerHTML = '<i class="fas fa-check" style="color:var(--green);"></i>'; setTimeout(() => el.innerHTML = '<i class="fas fa-copy"></i>', 1500);
   });
 }
 
@@ -678,7 +677,7 @@ async function submitRegistration() {
   errEl.classList.remove('show');
 
   if (!screenshotB64) {
-    errEl.textContent = '⚠ Please upload your payment screenshot before submitting.';
+    errEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please upload your payment screenshot before submitting.';
     errEl.classList.add('show');
     return;
   }
@@ -715,7 +714,7 @@ async function submitRegistration() {
 
     showPending(data.ticketId || tempTicketId);
   } catch (err) {
-    errEl.textContent = '⚠ ' + (err.message || 'Something went wrong. Please try again.');
+    errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (err.message || 'Something went wrong. Please try again.');
     errEl.classList.add('show');
     btn.classList.remove('loading'); btn.disabled = false;
   }

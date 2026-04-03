@@ -6,6 +6,7 @@
   <title>Ticket Scanner — Volunteer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- html5-qrcode CDN -->
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
@@ -425,7 +426,7 @@
 
   <!-- HEADER -->
   <header class="scanner-header">
-    <div class="vol-badge">🔒 Volunteer Portal</div>
+    <div class="vol-badge"><i class="fas fa-lock" style="margin-right:6px;"></i> Volunteer Portal</div>
     <h1>Ticket Scanner</h1>
     <p>Scan QR codes to check in participants</p>
   </header>
@@ -515,9 +516,9 @@
           </div>
         </div>
         <button class="btn-checkin" id="checkin-btn" style="display:none;" onclick="doCheckin()">
-          ✓ Check In This Participant
+          <i class="fas fa-user-check" style="margin-right:8px;"></i> Check In This Participant
         </button>
-        <button class="btn-reset" onclick="resetScanner()">⟳ Scan Next Ticket</button>
+        <button class="btn-reset" onclick="resetScanner()"><i class="fas fa-redo" style="margin-right:8px;"></i> Scan Next Ticket</button>
       </div>
     </div>
 
@@ -551,13 +552,13 @@ function unlock() {
   const errEl = document.getElementById('gate-error');
 
   if (code !== ACCESS_CODE) {
-    errEl.textContent = '⚠ Incorrect access code.';
+    errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Incorrect access code.';
     errEl.style.display = 'block';
     document.getElementById('access-code').classList.add('input-error');
     return;
   }
   if (!name) {
-    errEl.textContent = '⚠ Please enter your name.';
+    errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please enter your name.';
     errEl.style.display = 'block';
     document.getElementById('vol-name').classList.add('input-error');
     return;
@@ -639,8 +640,8 @@ async function fetchPending() {
           <div style="margin-top:4px; font-size:11px; color:var(--yellow);">Ref: ${p.paymentRef}</div>
         </div>
         <div class="pending-actions">
-          <a href="${p.screenshot}" target="_blank" class="btn-view-proof">🖼️ View Proof</a>
-          <button class="btn-approve" onclick="approveReg('${p.ticketId}', this)">✓ Approve</button>
+          <a href="${p.screenshot}" target="_blank" class="btn-view-proof"><i class="fas fa-image" style="margin-right:6px;"></i> View Proof</a>
+          <button class="btn-approve" onclick="approveReg('${p.ticketId}', this)"><i class="fas fa-check-circle" style="margin-right:4px;"></i> Approve</button>
         </div>
       </div>
     `).join('');
@@ -696,7 +697,7 @@ function startScanner() {
     scannerStarted = true;
     setStatus('Scanning for QR code…');
   }).catch(err => {
-    setStatus('⚠ Camera access denied. Use manual entry below.');
+    setStatus('<i class="fas fa-video-slash"></i> Camera access denied. Use manual entry below.');
     console.error(err);
   });
 }
@@ -750,7 +751,7 @@ async function lookupTicket(ticketId) {
     }
 
   } catch (err) {
-    setStatus('⚠ Network error. Check your connection.');
+    setStatus('<i class="fas fa-wifi"></i> Network error. Check your connection.');
     console.error(err);
   }
 }
@@ -783,14 +784,14 @@ async function doCheckin() {
       setStatus('Already checked in!');
       await lookupTicket(currentTicketId);
     } else {
-      setStatus('⚠ Check-in failed: ' + (data.message || 'Unknown error'));
+      setStatus('<i class="fas fa-exclamation-circle"></i> Check-in failed: ' + (data.message || 'Unknown error'));
       btn.disabled = false;
-      btn.innerHTML = '✓ Check In This Participant';
+      btn.innerHTML = '<i class="fas fa-user-check"></i> Check In This Participant';
     }
   } catch (err) {
-    setStatus('⚠ Network error during check-in.');
+    setStatus('<i class="fas fa-wifi"></i> Network error during check-in.');
     btn.disabled = false;
-    btn.innerHTML = '✓ Check In This Participant';
+    btn.innerHTML = '<i class="fas fa-user-check"></i> Check In This Participant';
   }
 }
 
@@ -811,13 +812,13 @@ function showResult(color, ticketId, data, extra) {
   label.className = 'status-label ' + color;
 
   if (color === 'green') {
-    label.textContent = '✓ Valid — Not Yet Checked In';
+    label.innerHTML = '<i class="fas fa-check-circle"></i> Valid — Not Yet Checked In';
     checkinBtn.style.display = 'block';
     checkinBtn.disabled = false;
     checkinBtn.innerHTML = '✓ Check In This Participant';
     extraWrap.style.display = 'none';
   } else if (color === 'red') {
-    label.textContent = '✕ Already Checked In';
+    label.innerHTML = '<i class="fas fa-times-circle"></i> Already Checked In';
     checkinBtn.style.display = 'none';
     if (data && data.checkinTime) {
       document.getElementById('r-extra-label').textContent = 'Check-in Info';
@@ -826,7 +827,7 @@ function showResult(color, ticketId, data, extra) {
       extraWrap.style.display = 'block';
     }
   } else {
-    label.textContent = '⚠ Ticket ID Not Found';
+    label.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ticket ID Not Found';
     checkinBtn.style.display = 'none';
     extraWrap.style.display = 'none';
   }
