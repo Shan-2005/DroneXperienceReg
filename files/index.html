@@ -226,6 +226,26 @@
       cursor: pointer; transition: all 0.2s; font-family: var(--head);
     }
     .btn-alt:hover { background: #ffca28; color: #000; }
+    
+    .bank-details-box {
+      margin-top: 20px; padding: 20px; border-radius: 16px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      display: none; animation: fadeUp 0.3s ease;
+    }
+    .bank-info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; }
+    .bank-info-row span:first-child { color: var(--muted); }
+    .bank-info-row span:last-child { color: #fff; font-weight: 700; font-family: monospace; }
+    
+    .support-bar {
+      margin-top: 32px; padding: 16px; border-radius: 16px;
+      background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.1);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .support-text { font-size: 12px; color: var(--green); font-weight: 600; }
+    .btn-support {
+      background: #25d366; color: #fff; border: none; padding: 8px 16px; border-radius: 100px;
+      font-size: 11px; font-weight: 800; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px;
+    }
     .upi-app-btn .app-icon { font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); }
     .upi-app-btn .app-name { flex: 1; }
     .upi-app-btn .app-arrow { color: var(--muted); font-size: 20px; }
@@ -491,8 +511,26 @@
 
       <!-- Alternate ID Switch -->
       <div class="alternate-wrap">
-        <span class="alternate-text"><i class="fas fa-exclamation-circle"></i> Getting "Exceeded Bank Limit" error? <br/> This is an SBI throttle. Try our backup Axis account:</span>
-        <button class="btn-alt" id="btn-switch-upi" onclick="switchUPI()">SWITCH TO BACKUP ACCOUNT</button>
+        <span class="alternate-text"><i class="fas fa-exclamation-circle"></i> Still getting "Exceeded Bank Limit"? <br/> UPI might be throttled for your account today. </span>
+        <div style="display:flex; gap:10px; justify-content:center; flex-direction:column; align-items:center;">
+          <button class="btn-alt" id="btn-switch-upi" onclick="switchUPI()">TRY ALTERNATE UPI ID</button>
+          <button class="btn-alt" style="border-color:var(--muted); color:var(--muted); background:transparent;" onclick="toggleBankDetails()">SHOW BANK ACCOUNT DETAILS</button>
+        </div>
+      </div>
+
+      <!-- Bank Details (Fallback) -->
+      <div class="bank-details-box" id="bank-details">
+        <p style="font-size:12px; font-weight:700; color:var(--gold); margin-bottom:15px; text-transform:uppercase; letter-spacing:1px; text-align:center;">Direct Bank Transfer (IMPS/NEFT)</p>
+        <div class="bank-info-row"><span>Account Holder</span> <span id="bank-name">JOE SHAN NEERAJ</span></div>
+        <div class="bank-info-row"><span>Account Number</span> <span id="bank-acc">XXXXXXXXXXXX</span></div>
+        <div class="bank-info-row"><span>IFSC Code</span> <span id="bank-ifsc">XXXXXXXXXXX</span></div>
+        <div class="bank-info-row"><span>Bank Name</span> <span id="bank-bank">STATE BANK OF INDIA</span></div>
+        <p style="font-size:10px; color:var(--muted); margin-top:15px; text-align:center; line-height:1.4;">Transfer ₹600 and upload the screenshot below. <br/> Use Ticket ID as transfer remark.</p>
+      </div>
+
+      <div class="support-bar">
+        <span class="support-text">Facing issues with payment? </span>
+        <a href="https://wa.me/91XXXXXXXXXX?text=Hi,%20I'm%20facing%20issues%20with%20payment%20for%20DroneXperience" target="_blank" class="btn-support"><i class="fab fa-whatsapp"></i> Chat Support</a>
       </div>
 
       <!-- Upload payment screenshot -->
@@ -553,10 +591,11 @@
 ═══════════════════════════════════════════════════════ */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9eOCnmvuQv0uI-vDu4OlDtTjT6EIROBfmFTiH3tuBcF4gpjMqBhar2kJHBd9xqISm3Q/exec';
 
-// Multi-Bank Setup to bypass SBI limits
+// Multi-Bank Setup to bypass platform limits
 const UPI_ACCOUNTS = [
-  { id: 'areojoeshan2005@okaxis', name: 'Joe Shan Neeraj', bank: 'Axis' },
-  { id: 'areojoeshan2005@oksbi',  name: 'Joe Shan Neeraj', bank: 'SBI' }
+  { id: 'areojoeshan2005@okaxis',      name: 'Joe Shan Neeraj',      bank: 'Axis' },
+  { id: 'rithish.karthikeyan@okicici', name: 'Rithish K',            bank: 'ICICI' },
+  { id: 'areojoeshan2005@oksbi',       name: 'Joe Shan Neeraj',      bank: 'SBI' }
 ];
 
 let currentUpiIdx = 0; // Start with fresh Axis ID
@@ -689,10 +728,16 @@ function switchUPI() {
   btn.style.color = 'var(--green)';
   
   setTimeout(() => {
-    btn.innerHTML = `USE ALTERNATE (${currentUpiIdx === 0 ? 'AXIS' : 'SBI'})`;
+    btn.innerHTML = `TRY ALTERNATE (${UPI_ACCOUNTS[(currentUpiIdx + 1) % UPI_ACCOUNTS.length].bank})`;
     btn.style.borderColor = '';
     btn.style.color = '';
   }, 2000);
+}
+
+function toggleBankDetails() {
+  const box = document.getElementById('bank-details');
+  box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+  if (box.style.display === 'block') box.scrollIntoView({ behavior: 'smooth' });
 }
 
 /* ═══════════════════════════════════════════════════════
