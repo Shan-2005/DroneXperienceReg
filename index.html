@@ -279,110 +279,59 @@
       margin-top: 50px;
     }    /* ═══ TOTAL MOBILE REDESIGN ═══ */
     @media (max-width: 768px) {
-      /* Base & Typography */
-      body { font-size: 15px; }
-      .container { padding: 0 20px; }
-      h1 { font-size: 40px !important; line-height: 1.1 !important; margin-bottom: 20px !important; text-align: center; }
-      .section-title { font-size: 28px; margin-bottom: 30px; }
+      /* Base & Typography - Leaned Out */
+      body { font-size: 14px; }
+      .container { padding: 0 16px; }
+      h1 { font-size: 34px !important; margin-bottom: 16px !important; }
+      .section-title { font-size: 24px; margin-bottom: 24px; }
 
-      /* Top Bar */
-      .top-bar { 
-        padding: 15px 20px; 
-        background: rgba(3, 7, 18, 0.8);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        border-bottom: 1px solid var(--glass-border);
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        max-width: none;
-      }
-      .logo-banner-img { max-height: 60px; }
-      .nav-reg-btn { display: none !important; } /* Hidden on mobile header to focus on big CTA */
+      /* Top Bar - Compact */
+      .top-bar { padding: 12px 16px; }
+      .logo-banner-img { max-height: 50px; }
 
-      /* Hero Section */
-      .hero-container { padding: 40px 0 20px !important; text-align: center; }
-      .hero-text { max-width: 100%; }
-      .badge { margin: 0 auto 20px; font-size: 10px; }
-      .hero-text p { font-size: 16px !important; line-height: 1.5; margin: 0 auto; color: var(--text-muted); }
+      /* Hero Section - Tightened */
+      .hero-container { padding: 30px 0 10px !important; }
+      .badge { margin-bottom: 16px; padding: 4px 10px; font-size: 9px; }
+      .hero-text p { font-size: 15px !important; line-height: 1.4; }
 
-      /* Experience Timeline */
+      /* Experience Timeline - Lean */
       .hero-text div[style*="grid-template-columns: 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-        gap: 16px !important;
-        margin-top: 40px !important;
+        margin-top: 30px !important;
+        gap: 12px !important;
       }
-      .exp-card { 
-        text-align: left; 
-        padding: 24px; 
-        border-radius: 20px; 
-        border-left: 4px solid var(--primary);
-        background: var(--glass);
-        backdrop-filter: blur(10px);
-      }
-      .exp-card span { font-size: 18px !important; }
+      .exp-card { padding: 16px; border-radius: 16px; }
+      .exp-card span { font-size: 16px !important; margin-bottom: 4px !important; }
+      .exp-card p { font-size: 12px !important; }
 
-      /* Info Grid */
-      .grid-4 { 
-        grid-template-columns: 1fr 1fr !important; 
-        gap: 12px !important; 
-        padding: 0 5px;
-      }
-      .info-box { 
-        padding: 20px 10px !important; 
-        border-radius: 20px !important; 
-        background: rgba(255,255,255,0.03) !important;
-      }
-      .info-box h4 { font-size: 10px; opacity: 0.6; }
-      .info-box p { font-size: 14px !important; }
+      /* Info Grid - Pill style */
+      .grid-4 { gap: 10px !important; }
+      .info-box { padding: 14px 8px !important; border-radius: 14px !important; }
+      .info-box h4 { font-size: 9px; }
+      .info-box p { font-size: 12px !important; }
 
-      /* Highlights */
-      .highlights-grid { 
-        grid-template-columns: 1fr !important; 
-        gap: 16px !important; 
-        margin-top: 32px !important;
-      }
-      .highlight-card { 
-        display: flex;
-        text-align: left;
-        align-items: center;
-        gap: 20px;
-        padding: 24px;
-        border-radius: 24px;
-      }
-      .highlight-card i { font-size: 24px; margin-bottom: 0; min-width: 40px; text-align: center; }
-      .highlight-card h4 { margin-bottom: 4px; font-size: 17px; }
-      .highlight-card p { font-size: 13px; line-height: 1.4; }
+      /* Highlights - Compact Feature List */
+      .highlights-grid { gap: 12px !important; margin-top: 24px !important; }
+      .highlight-card { padding: 16px; gap: 16px; border-radius: 20px; }
+      .highlight-card i { font-size: 20px; min-width: 32px; }
+      .highlight-card h4 { font-size: 15px; }
+      .highlight-card p { font-size: 12px; }
 
-      /* About & Team */
-      .about-section { padding: 40px 24px; border-radius: 30px; margin: 40px 0; }
-      .about-content h2 { font-size: 30px; margin-bottom: 20px; }
-      .about-content p { font-size: 15px; text-align: justify; line-height: 1.8; }
+      /* About & Team - Compact */
+      .about-section { padding: 30px 20px; border-radius: 24px; margin: 30px 0; }
+      .about-content h2 { font-size: 26px; }
+      .about-content p { font-size: 14px; line-height: 1.6; }
 
-      .team-section { margin: 40px 0; }
-      .team-grid { grid-template-columns: 1fr; gap: 20px; }
-      .team-group { padding: 32px 24px; border-radius: 28px; }
-      .team-group h4 { font-size: 11px; margin-bottom: 20px; }
-      .member-list li { font-size: 16px; margin-bottom: 12px; }
+      .team-section { margin: 30px 0; }
+      .team-group { padding: 24px 20px; border-radius: 20px; }
+      .team-group h4 { margin-bottom: 16px; }
+      .member-list li { font-size: 14px; margin-bottom: 8px; }
 
-      /* Final CTA Reordering */
-      main { display: flex; flex-direction: column; }
-      .hero-container { order: 1; padding: 40px 0 0 !important; }
-      #register-now { order: 2; margin: 40px 0 !important; }
-      .info-section { order: 3; padding-top: 0 !important; }
-      .team-section { order: 4; }
-      .about-section { order: 5; }
-
-      .portal-card { 
-        padding: 50px 24px !important; 
-        border-radius: 36px !important; 
-        border: 2px solid var(--primary);
-        background: radial-gradient(circle at top right, rgba(0, 137, 123, 0.1), transparent);
-      }
+      /* Final CTA - Focused */
+      .portal-card { padding: 40px 20px !important; border-radius: 28px !important; }
+      .portal-card .icon { font-size: 48px !important; margin-bottom: 16px !important; }
+      .portal-card h2 { font-size: 24px !important; }
+      .portal-card p { font-size: 14px !important; margin-bottom: 24px !important; }
+      .btn-link { padding: 14px !important; font-size: 16px !important; }
       .portal-card .icon { font-size: 64px !important; }
       .portal-card h2 { font-size: 28px !important; }
       .portal-card p { font-size: 16px !important; }
