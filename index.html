@@ -79,6 +79,28 @@
     .logo-group { display: flex; gap: 20px; align-items: center; }
     .logo-group span { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
 
+    .nav-reg-btn {
+      display: none;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(0, 137, 123, 0.2);
+    }
+    .nav-reg-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(0, 137, 123, 0.4);
+      background: #009688;
+    }
+
+    @media (min-width: 1024px) {
+      .nav-reg-btn { display: inline-block; }
+    }
+
     /* Hero Section */
     .hero-container {
       display: flex;
@@ -300,8 +322,9 @@
     </div>
 
     <div class="container" style="position: relative; z-index: 10;">
-      <header>
+      <header style="display: flex; justify-content: space-between; align-items: center; padding: 32px 0;">
         <div class="date-item" style="font-weight: 600; font-size: 14px;">20th - 21st April 2026</div>
+        <a href="files/index.html" class="nav-reg-btn">Register Now</a>
       </header>
 
       <main>
