@@ -403,6 +403,8 @@
                 <p><i class="fas fa-envelope"></i> ${m.email}</p>
                 <p><i class="fas fa-phone"></i> ${m.phone}</p>
                 <p><i class="fas fa-building"></i> ${m.org}</p>
+                <p><i class="fas fa-id-card"></i> ${m.regno || 'N/A'}</p>
+                <p><i class="fas fa-graduation-cap"></i> ${m.degree || 'N/A'} - ${m.dept || 'N/A'} (${m.year || 'N/A'})</p>
                 <p><i class="fas fa-receipt"></i> ${m.paymentRef || 'No Ref'}</p>
               </div>
               <div class="card-actions">
@@ -425,8 +427,9 @@
               <tr>
                 <th>Participant</th>
                 <th>Status</th>
+                <th>Academic Details</th>
                 <th>Ref</th>
-                <th>Org</th>
+                <th>Org / Reg No</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -438,8 +441,15 @@
                     <div style="font-size:11px;color:var(--muted);"><i class="fas fa-id-badge" style="margin-right:8px;"></i>${m.ticketId}</div>
                   </td>
                   <td>${getStatusBadge(m.status)}</td>
+                  <td>
+                    <div style="font-size:12px; color:#fff;">${m.degree || '—'} ${m.dept || '—'}</div>
+                    <div style="font-size:11px; color:var(--muted);">Year: ${m.year || '—'}</div>
+                  </td>
                   <td><div style="font-family:monospace;font-size:12px;">${m.paymentRef || 'N/A'}</div></td>
-                  <td style="color:var(--muted);">${m.org}</td>
+                  <td style="color:var(--muted);">
+                    <div>${m.org}</div>
+                    <div style="font-size:11px; color:var(--accent);">${m.regno || '—'}</div>
+                  </td>
                   <td>
                     <div class="row-actions">
                       ${m.screenshot ? `<a href="${m.screenshot}" target="_blank" class="btn-icon" title="View Proof"><i class="fas fa-image"></i></a>` : ''}
@@ -469,7 +479,9 @@
       const filtered = allMembers.filter(m => 
         m.name.toLowerCase().includes(q) || 
         m.ticketId.toLowerCase().includes(q) || 
-        m.org.toLowerCase().includes(q)
+        m.org.toLowerCase().includes(q) ||
+        (m.dept && m.dept.toLowerCase().includes(q)) ||
+        (m.regno && m.regno.toLowerCase().includes(q))
       );
       renderTable(filtered);
     }

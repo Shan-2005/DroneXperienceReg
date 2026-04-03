@@ -493,6 +493,22 @@
             <small>Phone</small>
             <span id="r-phone">—</span>
           </div>
+          <div class="result-field">
+            <small>Dept</small>
+            <span id="r-dept">—</span>
+          </div>
+          <div class="result-field">
+            <small>Year</small>
+            <span id="r-year">—</span>
+          </div>
+          <div class="result-field">
+            <small>Degree</small>
+            <span id="r-degree">—</span>
+          </div>
+          <div class="result-field">
+            <small>Reg No.</small>
+            <span id="r-regno">—</span>
+          </div>
           <div class="result-field full" id="r-extra-wrap" style="display:none;">
             <small id="r-extra-label">Info</small>
             <span id="r-extra">—</span>
@@ -819,6 +835,10 @@ function showResult(color, ticketId, data, extra) {
   document.getElementById('r-name').textContent  = data ? data.name  : '—';
   document.getElementById('r-org').textContent   = data ? data.org   : '—';
   document.getElementById('r-phone').textContent = data ? data.phone : '—';
+  document.getElementById('r-dept').textContent  = data ? data.dept  : '—';
+  document.getElementById('r-year').textContent  = data ? (data.year === 'Other' ? 'Other' : data.year + 'st/nd/rd/th Year') : '—';
+  document.getElementById('r-degree').textContent = data ? data.degree : '—';
+  document.getElementById('r-regno').textContent = data ? data.regno : '—';
 
   card.classList.remove('show');
   void card.offsetWidth; // force reflow

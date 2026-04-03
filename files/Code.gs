@@ -20,14 +20,18 @@ const COL = {
   TIMESTAMP:    0,
   NAME:         1,
   EMAIL:        2,
-  PHONE:        3,
-  ORG:          4,
-  TICKET_ID:    5,
-  PAYMENT_REF:  6,   // provisional ticket ID used as payment note
-  SCREENSHOT:   7,   // Google Drive URL of payment screenshot
-  STATUS:       8,
-  CHECKIN_TIME: 9,
-  CHECKED_BY:   10,
+  DEPT:         3,
+  YEAR:         4,
+  DEGREE:       5,
+  REG_NO:       6,
+  PHONE:        7,
+  ORG:          8,
+  TICKET_ID:    9,
+  PAYMENT_REF:  10,   // provisional ticket ID used as payment note
+  SCREENSHOT:   11,   // Google Drive URL of payment screenshot
+  STATUS:       12,
+  CHECKIN_TIME: 13,
+  CHECKED_BY:   14,
 };
 
 // ─── CORS HELPER ────────────────────────────────────────────────
@@ -77,6 +81,10 @@ function doGet(e) {
           checkedIn:   row[COL.STATUS],
           checkinTime: row[COL.CHECKIN_TIME] ? String(row[COL.CHECKIN_TIME]) : '',
           checkedBy:   row[COL.CHECKED_BY],
+          dept:        row[COL.DEPT] || '',
+          year:        row[COL.YEAR] || '',
+          degree:      row[COL.DEGREE] || '',
+          regno:       row[COL.REG_NO] || '',
         });
       }
     }
@@ -111,9 +119,9 @@ function doPost(e) {
 
 // ─── REGISTER ───────────────────────────────────────────────────
 function handleRegister(body) {
-  const { name, email, phone, org, eventName, eventDate, eventVenue, paymentRef, screenshot } = body;
+  const { name, email, phone, org, regno, degree, dept, year, eventName, eventDate, eventVenue, paymentRef, screenshot } = body;
 
-  if (!name || !email || !phone || !org) {
+  if (!name || !email || !phone || !org || !regno || !degree || !dept || !year) {
     return corsOutput({ success: false, message: 'Missing required fields' });
   }
 
@@ -149,6 +157,10 @@ function handleRegister(body) {
     timestamp,
     name,
     email,
+    dept || '',
+    year || '',
+    degree || '',
+    regno || '',
     phone,
     org,
     ticketId,
@@ -209,7 +221,11 @@ function getPendingApprovals() {
         org:        row[COL.ORG],
         ticketId:   row[COL.TICKET_ID],
         paymentRef: row[COL.PAYMENT_REF],
-        screenshot: row[COL.SCREENSHOT]
+        screenshot: row[COL.SCREENSHOT],
+        dept:       row[COL.DEPT] || '',
+        year:       row[COL.YEAR] || '',
+        degree:     row[COL.DEGREE] || '',
+        regno:      row[COL.REG_NO] || ''
       });
     }
   }
@@ -371,7 +387,11 @@ function getAdminDashboardData(user, pass) {
       ticketId:   row[COL.TICKET_ID],
       paymentRef: row[COL.PAYMENT_REF],
       screenshot: row[COL.SCREENSHOT],
-      status:     status
+      status:     status,
+      dept:       row[COL.DEPT] || '',
+      year:       row[COL.YEAR] || '',
+      degree:     row[COL.DEGREE] || '',
+      regno:      row[COL.REG_NO] || ''
     });
   }
 

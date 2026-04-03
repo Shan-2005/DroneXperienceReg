@@ -360,6 +360,33 @@
         <input type="text" id="org" placeholder="e.g. IIT Madras" />
         <div class="field-error" id="org-err">Please enter your organization.</div>
       </div>
+      <div class="form-group">
+        <label for="regno">College Register No.</label>
+        <input type="text" id="regno" placeholder="e.g. RA2211003010101" />
+        <div class="field-error" id="regno-err">Please enter your register number.</div>
+      </div>
+      <div class="form-group">
+        <label for="degree">Degree</label>
+        <input type="text" id="degree" placeholder="e.g. B.Tech" />
+        <div class="field-error" id="degree-err">Please enter your degree.</div>
+      </div>
+      <div class="form-group">
+        <label for="dept">Department</label>
+        <input type="text" id="dept" placeholder="e.g. Computer Science" />
+        <div class="field-error" id="dept-err">Please enter your department.</div>
+      </div>
+      <div class="form-group">
+        <label for="year">Year of Study</label>
+        <select id="year">
+          <option value="" disabled selected>Select your year</option>
+          <option value="1">1st Year</option>
+          <option value="2">2nd Year</option>
+          <option value="3">3rd Year</option>
+          <option value="4">4th Year</option>
+          <option value="Other">Other</option>
+        </select>
+        <div class="field-error" id="year-err">Please select your year of study.</div>
+      </div>
 
       <button class="btn btn-primary" id="btn-next1" onclick="goToPayment()">
         <span class="btn-text">Continue to Payment →</span>
@@ -544,6 +571,10 @@ function validate() {
   check('email', 'email-err', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
   check('phone', 'phone-err', v => v.replace(/\D/g,'').length >= 7);
   check('org',   'org-err',   v => v.length > 1);
+  check('regno', 'regno-err', v => v.length > 1);
+  check('degree','degree-err',v => v.length > 1);
+  check('dept',  'dept-err',  v => v.length > 1);
+  check('year',  'year-err',  v => v !== '');
   return ok;
 }
 
@@ -661,6 +692,10 @@ async function submitRegistration() {
     email:       document.getElementById('email').value.trim(),
     phone:       document.getElementById('phone').value.trim(),
     org:         document.getElementById('org').value.trim(),
+    regno:       document.getElementById('regno').value.trim(),
+    degree:      document.getElementById('degree').value.trim(),
+    dept:        document.getElementById('dept').value.trim(),
+    year:        document.getElementById('year').value,
     eventName:   EVENT_NAME,
     eventDate:   EVENT_DATE,
     eventVenue:  EVENT_VENUE,
@@ -697,7 +732,7 @@ function showPending(ticketId) {
 /* ═══════════════════════════════════════════════════════
    AUTO-SAVE (step 1 only)
 ═══════════════════════════════════════════════════════ */
-['name','email','phone','org'].forEach(id => {
+['name','email','phone','org','regno','degree','dept','year'].forEach(id => {
   const el = document.getElementById(id);
   const saved = localStorage.getItem('dx_' + id);
   if (saved) el.value = saved;
