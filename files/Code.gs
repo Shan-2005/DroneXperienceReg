@@ -212,24 +212,25 @@ function getPendingApprovals() {
   const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
   const sheet = ss.getSheetByName(SHEET_NAME);
   const data  = sheet.getDataRange().getValues();
+  const COL   = getColMap(sheet);
   const pending = [];
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     if (row[COL.STATUS] === 'PendingApproval') {
       pending.push({
-        timestamp:  row[COL.TIMESTAMP],
+        timestamp:  row[0],
         name:       row[COL.NAME],
         email:      row[COL.EMAIL],
         phone:      row[COL.PHONE],
         org:        row[COL.ORG],
         ticketId:   row[COL.TICKET_ID],
-        paymentRef: row[COL.PAYMENT_REF],
-        screenshot: row[COL.SCREENSHOT],
-        dept:       row[COL.DEPT] || '',
-        year:       row[COL.YEAR] || '',
-        degree:     row[COL.DEGREE] || '',
-        regno:      row[COL.REG_NO] || ''
+        paymentRef: row[10],
+        screenshot: row[11],
+        dept:       row[3] || '',
+        year:       row[4] || '',
+        degree:     row[5] || '',
+        regno:      row[6] || ''
       });
     }
   }
@@ -378,6 +379,7 @@ function getAdminDashboardData(user, pass) {
   const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
   const sheet = ss.getSheetByName(SHEET_NAME);
   const data  = sheet.getDataRange().getValues();
+  const COL   = getColMap(sheet);
 
   const members = [];
   let total     = 0;
@@ -387,12 +389,12 @@ function getAdminDashboardData(user, pass) {
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    const status = String(row[COL.STATUS]).trim();
+    const status = String(row[COL.STATUS] || '').trim();
     
     total++;
     if (status === 'PendingApproval') pending++;
     else if (status === 'Approved')   approved++;
-    else if (status === 'Yes')        checkedIn++;
+    else if (status.toLowerCase() === CHECKED_IN_STATUS.toLowerCase()) checkedIn++;
 
     members.push({
       timestamp:  row[COL.TIMESTAMP],
@@ -401,8 +403,6 @@ function getAdminDashboardData(user, pass) {
       phone:      row[COL.PHONE],
       org:        row[COL.ORG],
       ticketId:   row[COL.TICKET_ID],
-      paymentRef: row[COL.PAYMENT_REF],
-      screenshot: row[COL.SCREENSHOT],
       status:     status,
       dept:       row[COL.DEPT] || '',
       year:       row[COL.YEAR] || '',
