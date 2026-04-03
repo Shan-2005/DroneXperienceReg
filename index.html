@@ -610,9 +610,15 @@
   </div>
 
   <script>
+    // Prevent browser from auto-scrolling to last position on reload
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+
     const glow = document.getElementById('cursor-glow');
     const bg = document.getElementById('hero-bg');
-    const card = document.getElementById('hero-card');
+    const card = document.getElementById('register-now');
     const portalCard = document.querySelector('.portal-card');
 
     document.addEventListener('mousemove', (e) => {
