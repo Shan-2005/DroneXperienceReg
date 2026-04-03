@@ -151,51 +151,6 @@ function handleRegister(sheet, body) {
   return res({ success: true, ticketId });
 }
 
-  // Generate official ticket ID (sequential)
-  const lastRow   = sheet.getLastRow();
-  const count     = Math.max(lastRow, 1);
-  const ticketNum = String(count).padStart(4, '0');
-  const ticketId  = `${TICKET_PREFIX}-${ticketNum}`;
-
-  const timestamp = new Date();
-
-  // Save payment screenshot to Google Drive (if provided)
-  let screenshotUrl = '';
-  if (screenshot && screenshot.startsWith('data:image')) {
-    try {
-      const base64Data   = screenshot.split(',')[1];
-      const contentType  = screenshot.split(';')[0].split(':')[1];
-      const blob         = Utilities.newBlob(Utilities.base64Decode(base64Data), contentType, `payment_${ticketId}.jpg`);
-      const folder       = getOrCreateFolder('DroneXperience_Screenshots');
-      const file         = folder.createFile(blob);
-      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      screenshotUrl = file.getUrl();
-    } catch (err) {
-      screenshotUrl = 'Upload failed: ' + err.message;
-    }
-  }
-
-  // Append row to sheet
-  sheet.appendRow([
-    timestamp,
-    name,
-    email,
-    dept || '',
-    year || '',
-    degree || '',
-    regno || '',
-    phone,
-    org,
-    ticketId,
-    paymentRef || '',   // provisional ID used in payment note
-    screenshotUrl,      // Drive link to screenshot
-    'PendingApproval', // Initial Status
-    '',                 // Check-in Time
-    '',                 // Checked In By
-  ]);
-
-  return corsOutput({ success: true, ticketId });
-}
 
 // ─── APPROVE PARTICIPANT ────────────────────────────────────────
 function approveParticipant(sheet, body) {
