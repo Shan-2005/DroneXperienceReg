@@ -197,10 +197,18 @@
       background: #fff;
       padding: 10px 0;
       text-align: center;
-      border-bottom: 2px solid var(--accent);
       position: sticky;
       top: 0;
       z-index: 1000;
+    }
+    .logo-banner-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #4db6ac);
     }
     .logo-banner-img {
       max-width: 90%;

@@ -10,6 +10,7 @@
     :root {
       --primary: #00897b;
       --primary-dark: #005c4b;
+      --accent: #00897b;
       --bg: #0a0a0f;
       --surface: rgba(30, 41, 59, 0.7);
       --border: rgba(255, 255, 255, 0.1);
@@ -160,20 +161,45 @@
     .animate { animation: fadeIn 0.8s ease-out forwards; }
     .delay-1 { animation-delay: 0.2s; }
     .delay-2 { animation-delay: 0.4s; }
+    /* Logo Banner Styles */
+    .logo-banner-wrap {
+      width: 100%;
+      background: #fff;
+      padding: 12px 0;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .logo-banner-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #4db6ac);
+    }
+    .logo-banner-img {
+      max-width: 90%;
+      height: auto;
+      max-height: 50px;
+    }
   </style>
 </head>
 <body>
 
   <div class="hero-bg"></div>
 
+  <!-- ═══ HEADER LOGO BANNER ═══ -->
+  <div class="logo-banner-wrap">
+    <img src="files/assets/branding_banner.png" alt="DroneXperience Branding" class="logo-banner-img">
+  </div>
+
+  <div class="container">
   <div class="container">
     <header>
-      <div class="logo-group">
-        <span>HEXA DYNAMICS</span>
-      </div>
-      <div>
-        <div class="info-item" style="font-weight: 600; font-size: 14px;">20th - 21st April 2026</div>
-      </div>
+      <div class="date-item" style="font-weight: 600; font-size: 14px;">20th - 21st April 2026</div>
     </header>
 
     <main>
