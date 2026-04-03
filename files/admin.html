@@ -260,6 +260,7 @@
         <p>Managing <span id="event-name">DroneXperience 2026</span> Registry</p>
       </div>
       <div class="header-actions">
+        <button class="btn-secondary" onclick="downloadCSV()"><i class="fas fa-file-csv"></i> DOWNLOAD CSV</button>
         <button class="btn-secondary" onclick="refreshData()"><i class="fas fa-sync-alt"></i> REFRESH</button>
         <button class="btn-secondary" onclick="logout()"><i class="fas fa-power-off"></i> LOGOUT</button>
       </div>
@@ -279,7 +280,7 @@
         <label><i class="fas fa-check-double"></i> APPROVED (NOT IN)</label>
         <div class="value" id="stat-approved">0</div>
       </div>
-      <div class="stat-card" onclick="filterByStatus('Yes')">
+      <div class="stat-card" onclick="filterByStatus('Checked-In')">
         <label><i class="fas fa-user-check"></i> CHECKED IN (AT VENUE)</label>
         <div class="value" id="stat-checked">0</div>
       </div>
@@ -494,7 +495,7 @@
     function getStatusBadge(status) {
       if (status === 'PendingApproval') return `<span class="badge badge-pending">PENDING</span>`;
       if (status === 'Approved') return `<span class="badge badge-approved">APPROVED</span>`;
-      if (status === 'Yes') return `<span class="badge badge-checked">CHECKED-IN</span>`;
+      if (status === 'Checked-In') return `<span class="badge badge-checked">CHECKED-IN</span>`;
       return `<span class="badge" style="background:rgba(255,255,255,0.05);">${status}</span>`;
     }
 
@@ -584,7 +585,7 @@
       // OPTIMISTIC UI: Update local state immediately
       const member = allMembers.find(m => m.ticketId === ticketId);
       if (member) {
-        member.status = 'Yes';
+        member.status = 'Checked-In';
         renderTable(allMembers);
         if (typeof showScanStatus === 'function') {
           showScanStatus('<i class="fas fa-check"></i> Check-in Registered Locally. Syncing...', true);
@@ -699,6 +700,50 @@
       const tid = document.getElementById('res-tid').innerText;
       await checkinReg(tid);
       resetScanner();
+    }
+
+    /* ─── EXPORT ────────────────────────────────────────────────── */
+    function downloadCSV() {
+      if (!allMembers || allMembers.length === 0) return;
+      
+      // Determine what to export: if currently filtered, export filtered.
+      // For this implementation, we'll export ALL or currently checked-in if filtered.
+      const q = document.getElementById('search-input').value.toLowerCase();
+      let toExport = allMembers;
+      
+      if (q) {
+        toExport = allMembers.filter(m => 
+          m.name.toLowerCase().includes(q) || 
+          m.ticketId.toLowerCase().includes(q) || 
+          m.org.toLowerCase().includes(q)
+        );
+      }
+
+      const headers = ["Ticket ID", "Name", "Email", "Phone", "Organization", "Dept", "Year", "Degree", "Reg No", "Status"];
+      const rows = toExport.map(m => [
+        m.ticketId,
+        m.name,
+        m.email,
+        m.phone,
+        m.org,
+        m.dept || '',
+        m.year || '',
+        m.degree || '',
+        m.regno || '',
+        m.status
+      ]);
+
+      let csvContent = "data:text/csv;charset=utf-8," 
+        + headers.join(",") + "\n"
+        + rows.map(e => e.join(",")).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `DroneXperience_Attendees_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
   </script>
