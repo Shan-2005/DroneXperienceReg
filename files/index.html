@@ -214,10 +214,12 @@
       transition: all .2s;
     }
     .upi-app-btn:hover { border-color: var(--accent); background: rgba(0, 137, 123, 0.05); transform: translateX(4px); }
-    .upi-app-btn .app-icon { font-size: 28px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 32px; }
-    .upi-logo { width: 32px; height: 32px; object-fit: contain; }
+    .upi-app-btn .app-icon { font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); }
     .upi-app-btn .app-name { flex: 1; }
     .upi-app-btn .app-arrow { color: var(--muted); font-size: 20px; }
+    .upi-brand-gpay    { color: #4285F4; }
+    .upi-brand-phonepe { color: #6739b7; }
+    .upi-brand-paytm   { color: #00baf2; }
 
     /* Desktop QR */
     .qr-block {
@@ -442,18 +444,21 @@
 
         <!-- Mobile: UPI app buttons (shown on small screens) -->
         <div class="upi-btns" id="mobile-pay">
+          <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px; text-align: center; border: 1px dashed var(--border); padding: 10px; border-radius: 10px;">
+            <i class="fas fa-info-circle"></i> If the app asks, enter <strong>₹600</strong> and Note: <strong id="note-reminder">DX-XXX</strong>
+          </p>
           <a href="#" class="upi-app-btn" id="gpay-btn">
-            <span class="app-icon"><img src="https://raw.githubusercontent.com/google-pay/google-pay-button/main/branding/logos/google_pay_logo.svg" class="upi-logo" alt="GPay"></span>
+            <span class="app-icon"><i class="fab fa-google-pay upi-brand-gpay"></i></span>
             <span class="app-name">Google Pay</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="phonepe-btn">
-            <span class="app-icon"><img src="https://www.vectorlogo.zone/logos/phonepe/phonepe-icon.svg" class="upi-logo" alt="PhonePe"></span>
+            <span class="app-icon"><i class="fas fa-wallet upi-brand-phonepe"></i></span>
             <span class="app-name">PhonePe</span>
             <span class="app-arrow">→</span>
           </a>
           <a href="#" class="upi-app-btn" id="paytm-btn">
-            <span class="app-icon"><img src="https://www.vectorlogo.zone/logos/paytm/paytm-icon.svg" class="upi-logo" alt="Paytm"></span>
+            <span class="app-icon"><i class="fas fa-university upi-brand-paytm"></i></span>
             <span class="app-name">Paytm</span>
             <span class="app-arrow">→</span>
           </a>
@@ -605,13 +610,17 @@ function goToPayment() {
   tempTicketId = genProvisionalId();
   document.getElementById('ticket-id-display').textContent = tempTicketId;
 
-  // Build UPI deep-link
+  // Build UPI deep-link (Removed 'am' to bypass bank 'amount-limit' on intent flow)
+  // This ensures the transaction goes through on personal accounts.
   const upiParams = new URLSearchParams({
     pa: UPI_ID, pn: UPI_NAME,
-    am: AMOUNT, cu: 'INR',
-    tn: tempTicketId   // ← ticket ID auto-tagged as payment note
+    cu: 'INR',
+    tn: tempTicketId
   });
   const upiLink = 'upi://pay?' + upiParams.toString();
+  
+  // Also update the note reminder in the UI
+  document.getElementById('note-reminder').textContent = tempTicketId;
 
   // Generate QR (for desktop) — encode the UPI link
   const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' +
