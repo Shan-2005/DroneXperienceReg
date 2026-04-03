@@ -5,85 +5,90 @@
 // ═══════════════════════════════════════════════════════════════
 
 // ─── CONFIGURATION ─────────────────────────────────────────────
-const SHEET_NAME    = 'Registrations';   // tab name in your Google Sheet
+const SHEET_NAME    = 'Registrations';   
 const EVENT_NAME    = 'DroneXperience Workshop';
 const EVENT_DATE    = '20th - 21st April 2026';
 const EVENT_VENUE   = 'TP2 - CLS 711';
 const TICKET_PREFIX = 'DX';
 const AMOUNT        = '₹600';
+
+// Status Constants
 const PENDING_APPROVAL_STATUS = 'PendingApproval';
 const APPROVED_STATUS         = 'Approved';
-// ─── HELPER: Dynamic Header Mapping ──────────────────────────────
+const CHECKED_IN_STATUS      = 'Checked-In';
+const SHEET_ID               = '1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA';
+
+// ─── HYBRID SPREADSHEET ACCESSOR ──────────────────────────────────
+function getSS() {
+  try {
+    return SpreadsheetApp.openById(SHEET_ID);
+  } catch (err) {
+    return SpreadsheetApp.getActiveSpreadsheet();
+  }
+}
+
+// ─── FUZZY HEADER MAPPING ─────────────────────────────────────────
 function getColMap(sheet) {
   const headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 15)).getValues()[0];
   const map = {
-    TIMESTAMP:    0,  NAME: 1, EMAIL: 2, DEPT: 3, YEAR: 4, DEGREE: 5, REG_NO: 6,
-    PHONE:        7,  ORG: 8, TICKET_ID: 9, PAYMENT_REF: 10, SCREENSHOT: 11,
-    STATUS:       12, CHECKIN_TIME: 13
+    TIMESTAMP: 0, NAME: 1, EMAIL: 2, DEPT: 3, YEAR: 4, DEGREE: 5, REG_NO: 6,
+    PHONE: 7, ORG: 8, TICKET_ID: 9, PAYMENT_REF: 10, SCREENSHOT: 11,
+    STATUS: 12, CHECKIN_TIME: 13
   };
   
   headers.forEach((h, i) => {
-    const text = String(h).toLowerCase().trim();
+    const text = String(h || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     if (text.includes('stamp')) map.TIMESTAMP = i;
     else if (text === 'name') map.NAME = i;
     else if (text === 'email') map.EMAIL = i;
     else if (text === 'department' || text === 'dept') map.DEPT = i;
     else if (text === 'year') map.YEAR = i;
     else if (text === 'degree') map.DEGREE = i;
-    else if (text.includes('reg no')) map.REG_NO = i;
-    else if (text === 'phone' || text === 'mobile') map.PHONE = i;
+    else if (text.includes('regno') || text.includes('regno')) map.REG_NO = i;
+    else if (text === 'phone' || text === 'mobile' || text === 'number') map.PHONE = i;
     else if (text === 'organization' || text === 'college' || text === 'org') map.ORG = i;
-    else if (text.includes('ticket id')) map.TICKET_ID = i;
+    else if (text.includes('ticketid')) map.TICKET_ID = i;
     else if (text.includes('payment') || text.includes('ref')) map.PAYMENT_REF = i;
     else if (text.includes('screenshot')) map.SCREENSHOT = i;
     else if (text === 'status') map.STATUS = i;
-    else if (text.includes('check-in time')) map.CHECKIN_TIME = i;
+    else if (text.includes('checkintime') || (text.includes('checkin') && text.includes('time'))) map.CHECKIN_TIME = i;
   });
   return map;
 }
 
-const CHECKED_IN_STATUS = 'Checked-In';
-
-// ─── CORS HELPER ────────────────────────────────────────────────
-function corsOutput(data) {
-  const output = ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
-  return output;
+// ─── STATUS NORMALIZER ───────────────────────────────────────────
+function norm(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-// ─── doGet — ticket lookup for scanner ─────────────────────────
+// ─── CORS & RESPONSE HELPER ───────────────────────────────────────
+function res(data) {
+  return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ─── doGet — ticket lookup for scanner & Dashboard ───────────────
 function doGet(e) {
   try {
     const action = e.parameter.action;
+    const ss     = getSS();
+    const sheet  = ss.getSheetByName(SHEET_NAME);
     
-    if (action === 'getPending') {
-      return getPendingApprovals();
-    }
-    if (action === 'getAdminData') {
-      return getAdminDashboardData(e.parameter.user, e.parameter.pass);
-    }
-    if (action === 'checkin') {
-      return handleCheckin(e.parameter); // Handles ticketId and volunteerName from parameters
-    }
-    if (action === 'approve') {
-      return approveParticipant(e.parameter); // Handles ticketId and adminName from parameters
-    }
+    if (action === 'getPending') return getPendingApprovals(sheet);
+    if (action === 'getAdminData') return getAdminDashboardData(sheet, e.parameter.user, e.parameter.pass);
+    if (action === 'checkin') return handleCheckin(sheet, e.parameter); 
+    if (action === 'approve') return approveParticipant(sheet, e.parameter);
 
     const ticketId = (e.parameter.ticketId || '').trim().toUpperCase();
-    if (!ticketId) return corsOutput({ found: false, error: 'No ticketId provided' });
+    if (!ticketId) return res({ found: false, error: 'No ticketId' });
 
-    const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-    const sheet = ss.getSheetByName(SHEET_NAME);
-    const data  = sheet.getDataRange().getValues();
-    const COL   = getColMap(sheet);
+    const data = sheet.getDataRange().getValues();
+    const COL  = getColMap(sheet);
 
-    // Row 0 is header; search from row 1
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       const sheetTicketId = String(row[COL.TICKET_ID] || '').trim().toUpperCase();
       if (sheetTicketId === ticketId) {
-        return corsOutput({
+        return res({
           found:       true,
           name:        row[COL.NAME],
           email:       row[COL.EMAIL],
@@ -95,10 +100,9 @@ function doGet(e) {
         });
       }
     }
-
-    return corsOutput({ found: false });
+    return res({ found: false });
   } catch (err) {
-    return corsOutput({ found: false, error: err.message });
+    return res({ found: false, error: err.message });
   }
 }
 
@@ -106,34 +110,46 @@ function doGet(e) {
 function doPost(e) {
   try {
     const body   = JSON.parse(e.postData.contents);
-    const action = body.action;
+    const ss     = getSS();
+    const sheet  = ss.getSheetByName(SHEET_NAME);
 
-    if (action === 'register') {
-      return handleRegister(body);
-    } else if (action === 'checkin') {
-      return handleCheckin(body);
-    } else if (action === 'approve') {
-      return approveParticipant(body);
-    } else if (action === 'getAdminData') {
-      return getAdminDashboardData(body.user, body.pass);
-    } else {
-      return corsOutput({ success: false, message: 'Unknown action' });
-    }
+    if (body.action === 'register') return handleRegister(sheet, body);
+    if (body.action === 'checkin')  return handleCheckin(sheet, body);
+    if (body.action === 'approve')  return approveParticipant(sheet, body);
+    if (body.action === 'getAdminData') return getAdminDashboardData(sheet, body.user, body.pass);
+    
+    return res({ success: false, message: 'Unknown action' });
   } catch (err) {
-    return corsOutput({ success: false, message: err.message });
+    return res({ success: false, message: err.message });
   }
 }
 
 // ─── REGISTER ───────────────────────────────────────────────────
-function handleRegister(body) {
-  const { name, email, phone, org, regno, degree, dept, year, eventName, eventDate, eventVenue, paymentRef, screenshot } = body;
+function handleRegister(sheet, body) {
+  const { name, email, phone, org, regno, degree, dept, year, paymentRef, screenshot } = body;
 
-  if (!name || !email || !phone || !org || !regno || !degree || !dept || !year) {
-    return corsOutput({ success: false, message: 'Missing required fields' });
+  if (!name || !email) return res({ success: false, message: 'Name and Email are required' });
+
+  // Generate ticket ID
+  const lastRow   = sheet.getLastRow();
+  const ticketId  = `${TICKET_PREFIX}-${String(Math.max(lastRow, 1)).padStart(4, '0')}`;
+  
+  const timestamp = new Date();
+  let screenshotUrl = '';
+  
+  if (screenshot && screenshot.startsWith('data:image')) {
+    try {
+      const blob = Utilities.newBlob(Utilities.base64Decode(screenshot.split(',')[1]), screenshot.split(';')[0].split(':')[1], `payment_${ticketId}.jpg`);
+      const folder = getOrCreateFolder('DroneXperience_Screenshots');
+      const file = folder.createFile(blob);
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      screenshotUrl = file.getUrl();
+    } catch (err) { screenshotUrl = 'Upload error: ' + err.message; }
   }
 
-  const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-  const sheet = ss.getSheetByName(SHEET_NAME);
+  sheet.appendRow([timestamp, name, email, dept || '', year || '', degree || '', regno || '', phone, org, ticketId, paymentRef || '', screenshotUrl, PENDING_APPROVAL_STATUS, '', '']);
+  return res({ success: true, ticketId });
+}
 
   // Generate official ticket ID (sequential)
   const lastRow   = sheet.getLastRow();
@@ -182,63 +198,39 @@ function handleRegister(body) {
 }
 
 // ─── APPROVE PARTICIPANT ────────────────────────────────────────
-function approveParticipant(body) {
-  const { ticketId, adminName } = body;
-  if (!ticketId) return corsOutput({ success: false, message: 'Missing ticketId' });
+function approveParticipant(sheet, body) {
+  const ticketId = (body.ticketId || '').trim().toUpperCase();
+  if (!ticketId) return res({ success: false, message: 'Missing ticketId' });
 
-  const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-  const sheet = ss.getSheetByName(SHEET_NAME);
-  const data  = sheet.getDataRange().getValues();
-  const COL   = getColMap(sheet);
+  const data = sheet.getDataRange().getValues();
+  const COL  = getColMap(sheet);
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (String(row[COL.TICKET_ID] || '').trim().toUpperCase() === ticketId.trim().toUpperCase()) {
-      
-      if (String(row[COL.STATUS] || '').trim() !== 'PendingApproval') {
-        return corsOutput({ success: false, message: 'Already approved or checked in' });
-      }
+    if (String(row[COL.TICKET_ID] || '').trim().toUpperCase() === ticketId) {
+      if (norm(row[COL.STATUS]) !== norm(PENDING_APPROVAL_STATUS)) return res({ success: false, message: 'Already processed' });
 
-      const sheetRow = i + 1;
-      sheet.getRange(sheetRow, COL.STATUS + 1).setValue(APPROVED_STATUS);
-      
-      // Send the actual ticket email ONLY now
+      sheet.getRange(i + 1, COL.STATUS + 1).setValue(APPROVED_STATUS);
+      SpreadsheetApp.flush();
       sendTicketEmail(row[COL.EMAIL], row[COL.NAME], ticketId, EVENT_NAME, EVENT_DATE, EVENT_VENUE);
-      
-      return corsOutput({ success: true });
+      return res({ success: true });
     }
   }
-  return corsOutput({ success: false, message: 'Ticket not found' });
+  return res({ success: false, message: 'Ticket not found' });
 }
 
 // ─── GET PENDING LIST ───────────────────────────────────────────
-function getPendingApprovals() {
-  const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-  const sheet = ss.getSheetByName(SHEET_NAME);
-  const data  = sheet.getDataRange().getValues();
-  const COL   = getColMap(sheet);
+function getPendingApprovals(sheet) {
+  const data = sheet.getDataRange().getValues();
+  const COL  = getColMap(sheet);
   const pending = [];
-
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (String(row[COL.STATUS] || '').trim() === 'PendingApproval') {
-      pending.push({
-        timestamp:  row[COL.TIMESTAMP],
-        name:       row[COL.NAME],
-        email:      row[COL.EMAIL],
-        phone:      row[COL.PHONE],
-        org:        row[COL.ORG],
-        ticketId:   row[COL.TICKET_ID],
-        paymentRef: row[COL.PAYMENT_REF],
-        screenshot: row[COL.SCREENSHOT],
-        dept:       row[COL.DEPT] || '',
-        year:       row[COL.YEAR] || '',
-        degree:     row[COL.DEGREE] || '',
-        regno:      row[COL.REG_NO] || ''
-      });
+    if (norm(row[COL.STATUS]) === norm(PENDING_APPROVAL_STATUS)) {
+      pending.push({ timestamp: row[COL.TIMESTAMP], name: row[COL.NAME], email: row[COL.EMAIL], phone: row[COL.PHONE], org: row[COL.ORG], ticketId: row[COL.TICKET_ID], paymentRef: row[COL.PAYMENT_REF], screenshot: row[COL.SCREENSHOT], dept: row[COL.DEPT], year: row[COL.YEAR], degree: row[COL.DEGREE], regno: row[COL.REG_NO] });
     }
   }
-  return corsOutput({ success: true, pending });
+  return res({ success: true, pending });
 }
 
 // ─── DRIVE HELPER ───────────────────────────────────────────────
@@ -249,50 +241,25 @@ function getOrCreateFolder(folderName) {
 }
 
 // ─── CHECK IN ───────────────────────────────────────────────────
-function handleCheckin(body) {
+function handleCheckin(sheet, body) {
   const ticketId = (body.ticketId || '').trim().toUpperCase();
-  
-  if (!ticketId) return corsOutput({ success: false, message: 'Missing ticketId' });
+  if (!ticketId) return res({ success: false, message: 'Missing ticketId' });
 
-  try {
-    const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-    const sheet = ss.getSheetByName(SHEET_NAME);
-    if (!sheet) return corsOutput({ success: false, message: `Sheet ${SHEET_NAME} not found` });
+  const data = sheet.getDataRange().getValues();
+  const COL  = getColMap(sheet);
 
-    const data  = sheet.getDataRange().getValues();
-    const COL   = getColMap(sheet);
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (String(row[COL.TICKET_ID] || '').trim().toUpperCase() === ticketId) {
+      if (norm(row[COL.STATUS]) === norm(CHECKED_IN_STATUS)) return res({ success: false, reason: 'already_checked_in', time: String(row[COL.CHECKIN_TIME]) });
 
-    for (let i = 1; i < data.length; i++) {
-      const row = data[i];
-      const sheetTicketId = String(row[COL.TICKET_ID] || '').trim().toUpperCase();
-      
-      if (sheetTicketId === ticketId) {
-        if (String(row[COL.STATUS]).trim().toLowerCase() === CHECKED_IN_STATUS.toLowerCase()) {
-          return corsOutput({
-            success:  false,
-            reason:   'already_checked_in',
-            time:     String(row[COL.CHECKIN_TIME]),
-          });
-        }
-
-        // Update the sheet (sheet rows are 1-indexed)
-        const sheetRow = i + 1;
-        const now = new Date();
-        
-        // Update values
-        sheet.getRange(sheetRow, COL.STATUS + 1).setValue(CHECKED_IN_STATUS);
-        sheet.getRange(sheetRow, COL.CHECKIN_TIME + 1).setValue(now);
-        
-        // Force flush for immediate persistence
-        SpreadsheetApp.flush(); 
-
-        return corsOutput({ success: true });
-      }
+      sheet.getRange(i + 1, COL.STATUS + 1).setValue(CHECKED_IN_STATUS);
+      sheet.getRange(i + 1, COL.CHECKIN_TIME + 1).setValue(new Date());
+      SpreadsheetApp.flush(); 
+      return res({ success: true });
     }
-    return corsOutput({ success: false, reason: 'not_found', message: 'Ticket ID not found' });
-  } catch (err) {
-    return corsOutput({ success: false, message: 'Server Error: ' + err.toString() });
   }
+  return res({ success: false, reason: 'not_found', message: 'Ticket ID not found' });
 }
 
 // ─── EMAIL ──────────────────────────────────────────────────────
@@ -370,56 +337,27 @@ function sendTicketEmail(email, name, ticketId, eventName, eventDate, eventVenue
 }
 
 // ─── ADMIN DASHBOARD DATA ───────────────────────────────────────
-function getAdminDashboardData(user, pass) {
+function getAdminDashboardData(sheet, user, pass) {
   const u = (user || '').trim().toLowerCase();
   const p = (pass || '').trim().toLowerCase();
+  if (u !== 'hexaadmin' || p !== 'password') return res({ success: false, message: 'Invalid Username or Password' });
 
-  console.log('Login Attempt:', { receivedUser: u, receivedPass: p });
-
-  if (u !== 'hexaadmin' || p !== 'password') {
-    return corsOutput({ success: false, message: 'Invalid Username or Password' });
-  }
-
-  const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-  const sheet = ss.getSheetByName(SHEET_NAME);
-  const data  = sheet.getDataRange().getValues();
-  const COL   = getColMap(sheet);
-
+  const data = sheet.getDataRange().getValues();
+  const COL  = getColMap(sheet);
   const members = [];
-  let total     = 0;
-  let pending   = 0;
-  let approved  = 0;
-  let checkedIn = 0;
+  let stats = { total: 0, pending: 0, approved: 0, checkedIn: 0 };
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     const status = String(row[COL.STATUS] || '').trim();
+    const normalized = norm(status);
     
-    total++;
-    if (status === 'PendingApproval') pending++;
-    else if (status === 'Approved')   approved++;
-    else if (status.toLowerCase() === CHECKED_IN_STATUS.toLowerCase()) checkedIn++;
+    stats.total++;
+    if (normalized === norm(PENDING_APPROVAL_STATUS)) stats.pending++;
+    else if (normalized === norm(APPROVED_STATUS)) stats.approved++;
+    else if (normalized === norm(CHECKED_IN_STATUS)) stats.checkedIn++;
 
-    members.push({
-      timestamp:  row[COL.TIMESTAMP],
-      name:       row[COL.NAME],
-      email:      row[COL.EMAIL],
-      phone:      row[COL.PHONE],
-      org:        row[COL.ORG],
-      ticketId:   row[COL.TICKET_ID],
-      status:     status,
-      dept:       row[COL.DEPT] || '',
-      year:       row[COL.YEAR] || '',
-      degree:     row[COL.DEGREE] || '',
-      regno:      row[COL.REG_NO] || '',
-      paymentRef: row[COL.PAYMENT_REF] || '',
-      screenshot: row[COL.SCREENSHOT] || ''
-    });
+    members.push({ timestamp: row[COL.TIMESTAMP], name: row[COL.NAME], email: row[COL.EMAIL], phone: row[COL.PHONE], org: row[COL.ORG], ticketId: row[COL.TICKET_ID], status: status, dept: row[COL.DEPT] || '', year: row[COL.YEAR] || '', degree: row[COL.DEGREE] || '', regno: row[COL.REG_NO] || '', paymentRef: row[COL.PAYMENT_REF] || '', screenshot: row[COL.SCREENSHOT] || '' });
   }
-
-  return corsOutput({
-    success: true,
-    stats: { total, pending, approved, checkedIn },
-    members: members.reverse() // Newest first
-  });
+  return res({ success: true, stats, members: members.reverse() });
 }
