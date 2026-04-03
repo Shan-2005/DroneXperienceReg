@@ -169,10 +169,10 @@
     /* Logo Banner Styles */
     .logo-banner-wrap {
       width: 100%;
-      background: #fff;
-      padding: 12px 0;
+      background: var(--background); /* Matches site background */
+      padding: 16px 0;
       text-align: center;
-      position: relative; /* Scrolls with the page */
+      position: relative;
       z-index: 1000;
     }
     .logo-banner-wrap::after {
@@ -187,7 +187,12 @@
     .logo-banner-img {
       max-width: 90%;
       height: auto;
-      max-height: 50px;
+      max-height: 44px;
+      background: #fff; /* Logos on white pill */
+      padding: 8px 24px;
+      border-radius: 100px; /* Pill shape */
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: inline-block;
     }
   </style>
 </head>
