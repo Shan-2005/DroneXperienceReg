@@ -474,29 +474,14 @@
       <div class="pay-method-wrap">
         <div class="pay-method-title" id="pay-method-label">Pay using</div>
 
-        <!-- Mobile: UPI app buttons (shown on small screens) -->
+        <!-- Mobile: Simplified UPI button (shown on small screens) -->
         <div class="upi-btns" id="mobile-pay">
-          <p style="font-size: 11px; color: var(--muted); margin-bottom: 12px; text-align: center; border: 1px dashed var(--border); padding: 10px; border-radius: 10px;">
-            <i class="fas fa-info-circle"></i> If the app asks, enter <strong>₹600</strong> and Note: <strong id="note-reminder">DX-XXX</strong>
+          <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px; text-align: center; border: 1px dashed var(--border); padding: 10px; border-radius: 10px;">
+            <i class="fas fa-info-circle"></i> Enter <strong>₹600</strong> manually and Note: <strong id="note-reminder">DX-XXX</strong>
           </p>
-          <a href="#" class="upi-app-btn" id="gpay-btn">
-            <span class="app-icon"><i class="fab fa-google upi-brand-gpay"></i></span>
-            <span class="app-name">Google Pay</span>
-            <span class="app-arrow">→</span>
-          </a>
-          <a href="#" class="upi-app-btn" id="phonepe-btn">
-            <span class="app-icon"><i class="fas fa-wallet upi-brand-phonepe"></i></span>
-            <span class="app-name">PhonePe</span>
-            <span class="app-arrow">→</span>
-          </a>
-          <a href="#" class="upi-app-btn" id="paytm-btn">
-            <span class="app-icon"><i class="fas fa-university upi-brand-paytm"></i></span>
-            <span class="app-name">Paytm</span>
-            <span class="app-arrow">→</span>
-          </a>
-          <a href="#" class="upi-app-btn" id="generic-btn">
-            <span class="app-icon"><i class="fas fa-mobile-alt"></i></span>
-            <span class="app-name">Any UPI App</span>
+          <a href="#" class="upi-app-btn" id="universal-pay-btn" style="border-width:2px; border-color:var(--accent); background:rgba(0,137,123,0.1);">
+            <span class="app-icon"><i class="fas fa-bolt" style="color:var(--gold);"></i></span>
+            <span class="app-name" style="font-weight:800; letter-spacing:1px;">PAY VIA ANY UPI APP</span>
             <span class="app-arrow">→</span>
           </a>
         </div>
@@ -699,11 +684,8 @@ function updatePaymentDisplay() {
     encodeURIComponent(upiLink) + '&color=000000&bgcolor=ffffff';
   document.getElementById('payment-qr').src = qrUrl;
 
-  // Set UPI app deep links (Using universal upi://pay for maximum bank compatibility)
-  document.getElementById('gpay-btn').href    = upiLink;
-  document.getElementById('phonepe-btn').href = upiLink;
-  document.getElementById('paytm-btn').href   = upiLink;
-  document.getElementById('generic-btn').href = upiLink;
+  // Set UPI app deep link (Using universal upi://pay for maximum bank compatibility)
+  document.getElementById('universal-pay-btn').href = upiLink;
 
   // Device detection: show correct UI
   if (isMobile) {
