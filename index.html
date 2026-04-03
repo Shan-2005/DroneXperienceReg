@@ -23,7 +23,7 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: auto; } /* Disabled by default to prevent load-time jumps */
     body {
       font-family: var(--body);
       background-color: var(--bg);
@@ -466,7 +466,25 @@
 
   </style>
 </head>
-<body>    <div class="glass-orb orb-1"></div>
+<body style="opacity: 0; transition: opacity 0.5s ease;">
+  <script>
+    // Critical: Force scroll to top before anything renders
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo(0, 0);
+    document.documentElement.style.scrollBehavior = 'auto';
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      window.scrollTo(0, 0);
+      document.body.style.opacity = '1';
+      // Re-enable smooth scroll after a short delay
+      setTimeout(() => {
+        document.documentElement.style.scrollBehavior = 'smooth';
+      }, 1000);
+    });
+  </script>
+    <div class="glass-orb orb-1"></div>
     <div class="glass-orb orb-2"></div>
     <div class="cursor-glow" id="cursor-glow"></div>
     <div class="hero-bg" id="hero-bg"></div>
@@ -610,12 +628,6 @@
   </div>
 
   <script>
-    // Prevent browser from auto-scrolling to last position on reload
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
-    }
-    window.scrollTo(0, 0);
-
     const glow = document.getElementById('cursor-glow');
     const bg = document.getElementById('hero-bg');
     const card = document.getElementById('register-now');
