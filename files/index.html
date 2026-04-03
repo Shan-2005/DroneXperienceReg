@@ -214,6 +214,18 @@
       transition: all .2s;
     }
     .upi-app-btn:hover { border-color: var(--accent); background: rgba(0, 137, 123, 0.05); transform: translateX(4px); }
+    .alternate-wrap { 
+      margin-top: 24px; padding: 16px; border-radius: 16px; 
+      border: 1px solid rgba(255,193,7,0.2); background: rgba(255,193,7,0.02);
+      text-align: center;
+    }
+    .alternate-text { font-size: 11px; color: #ffca28; margin-bottom: 12px; display: block; font-weight: 600; line-height: 1.4; }
+    .btn-alt {
+      background: rgba(255,193,7,0.1); border: 1px solid #ffca28; color: #ffca28;
+      padding: 8px 16px; border-radius: 100px; font-size: 11px; font-weight: 800;
+      cursor: pointer; transition: all 0.2s; font-family: var(--head);
+    }
+    .btn-alt:hover { background: #ffca28; color: #000; }
     .upi-app-btn .app-icon { font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); }
     .upi-app-btn .app-name { flex: 1; }
     .upi-app-btn .app-arrow { color: var(--muted); font-size: 20px; }
@@ -434,7 +446,7 @@
       <!-- UPI ID bar -->
       <div class="upi-bar">
         <span style="color:var(--muted);font-size:12px;">UPI ID</span>
-        <span class="upi-id">areojoeshan2005@oksbi</span>
+        <span class="upi-id" id="upi-id-primary">areojoeshan2005@okaxis</span>
         <button class="copy-btn" onclick="copyUPI()">Copy</button>
       </div>
 
@@ -473,8 +485,14 @@
         <div class="qr-block" id="desktop-pay">
           <img id="payment-qr" src="" alt="UPI Payment QR Code" />
           <div class="qr-label">Scan with any UPI app</div>
-          <div class="qr-upi">areojoeshan2005@oksbi</div>
+          <div class="qr-upi" id="qr-upi-text">areojoeshan2005@okaxis</div>
         </div>
+      </div>
+
+      <!-- Alternate ID Switch -->
+      <div class="alternate-wrap">
+        <span class="alternate-text"><i class="fas fa-exclamation-circle"></i> Getting "Exceeded Bank Limit" error? <br/> This is an SBI throttle. Try our backup Axis account:</span>
+        <button class="btn-alt" id="btn-switch-upi" onclick="switchUPI()">SWITCH TO BACKUP ACCOUNT</button>
       </div>
 
       <!-- Upload payment screenshot -->
@@ -534,8 +552,14 @@
    CONFIGURATION
 ═══════════════════════════════════════════════════════ */
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9eOCnmvuQv0uI-vDu4OlDtTjT6EIROBfmFTiH3tuBcF4gpjMqBhar2kJHBd9xqISm3Q/exec';
-const UPI_ID          = 'areojoeshan2005@oksbi';
-const UPI_NAME        = 'Joe Shan Neeraj';
+
+// Multi-Bank Setup to bypass SBI limits
+const UPI_ACCOUNTS = [
+  { id: 'areojoeshan2005@okaxis', name: 'Joe Shan Neeraj', bank: 'Axis' },
+  { id: 'areojoeshan2005@oksbi',  name: 'Joe Shan Neeraj', bank: 'SBI' }
+];
+
+let currentUpiIdx = 0; // Start with fresh Axis ID
 const AMOUNT          = '600';
 const EVENT_NAME      = 'DroneXperience Workshop';
 const EVENT_DATE      = '20th - 21st April 2026';
@@ -609,20 +633,29 @@ function goToPayment() {
   // Generate provisional ticket ID for payment reference
   tempTicketId = genProvisionalId();
   document.getElementById('ticket-id-display').textContent = tempTicketId;
+  
+  updatePaymentDisplay();
+
+  goToStep(2);
+}
+
+function updatePaymentDisplay() {
+  const acc = UPI_ACCOUNTS[currentUpiIdx];
+  
+  // Update text elements
+  document.getElementById('upi-id-primary').textContent = acc.id;
+  document.getElementById('qr-upi-text').textContent    = acc.id;
+  document.getElementById('note-reminder').textContent  = tempTicketId;
 
   // Build UPI deep-link (Removed 'am' to bypass bank 'amount-limit' on intent flow)
-  // This ensures the transaction goes through on personal accounts.
   const upiParams = new URLSearchParams({
-    pa: UPI_ID, pn: UPI_NAME,
+    pa: acc.id, pn: acc.name,
     cu: 'INR',
     tn: tempTicketId
   });
   const upiLink = 'upi://pay?' + upiParams.toString();
   
-  // Also update the note reminder in the UI
-  document.getElementById('note-reminder').textContent = tempTicketId;
-
-  // Generate QR (for desktop) — encode the UPI link
+  // Generate QR (for desktop)
   const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' +
     encodeURIComponent(upiLink) + '&color=000000&bgcolor=ffffff';
   document.getElementById('payment-qr').src = qrUrl;
@@ -643,8 +676,23 @@ function goToPayment() {
     document.getElementById('desktop-pay').style.display = 'block';
     document.getElementById('pay-method-label').textContent = '📱 Scan QR to pay';
   }
+}
 
-  goToStep(2);
+function switchUPI() {
+  currentUpiIdx = (currentUpiIdx + 1) % UPI_ACCOUNTS.length;
+  updatePaymentDisplay();
+  
+  const acc = UPI_ACCOUNTS[currentUpiIdx];
+  const btn = document.getElementById('btn-switch-upi');
+  btn.innerHTML = `<i class="fas fa-sync"></i> SWITCHED TO ${acc.bank.toUpperCase()}`;
+  btn.style.borderColor = 'var(--green)';
+  btn.style.color = 'var(--green)';
+  
+  setTimeout(() => {
+    btn.innerHTML = `USE ALTERNATE (${currentUpiIdx === 0 ? 'AXIS' : 'SBI'})`;
+    btn.style.borderColor = '';
+    btn.style.color = '';
+  }, 2000);
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -680,7 +728,8 @@ drop.addEventListener('drop', e => {
    COPY HELPERS
 ═══════════════════════════════════════════════════════ */
 function copyUPI() {
-  navigator.clipboard.writeText(UPI_ID).then(() => {
+  const upiId = UPI_ACCOUNTS[currentUpiIdx].id;
+  navigator.clipboard.writeText(upiId).then(() => {
     const btn = document.querySelector('.copy-btn');
     btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; btn.style.color = 'var(--green)';
     setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
