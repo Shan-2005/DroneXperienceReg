@@ -242,27 +242,51 @@ function getOrCreateFolder(folderName) {
 
 // ─── CHECK IN ───────────────────────────────────────────────────
 function handleCheckin(body) {
+  const ticketId = (body.ticketId || '').trim().toUpperCase();
+  const volunteerName = (body.volunteerName || 'Volunteer').trim();
+  
+  if (!ticketId) return corsOutput({ success: false, message: 'Missing ticketId' });
 
-      if (String(row[COL.STATUS]).trim() === CHECKED_IN_STATUS) {
-        return corsOutput({
-          success:  false,
-          reason:   'already_checked_in',
-          time:     String(row[COL.CHECKIN_TIME]),
-          by:       row[COL.CHECKED_BY],
-        });
+  try {
+    const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
+    const sheet = ss.getSheetByName(SHEET_NAME);
+    if (!sheet) return corsOutput({ success: false, message: `Sheet ${SHEET_NAME} not found` });
+
+    const data  = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const sheetTicketId = String(row[COL.TICKET_ID] || '').trim().toUpperCase();
+      
+      if (sheetTicketId === ticketId) {
+        if (String(row[COL.STATUS]).trim() === CHECKED_IN_STATUS) {
+          return corsOutput({
+            success:  false,
+            reason:   'already_checked_in',
+            time:     String(row[COL.CHECKIN_TIME]),
+            by:       row[COL.CHECKED_BY],
+          });
+        }
+
+        // Update the sheet (sheet rows are 1-indexed)
+        const sheetRow = i + 1;
+        const now = new Date();
+        
+        // Update values
+        sheet.getRange(sheetRow, COL.STATUS + 1).setValue(CHECKED_IN_STATUS);
+        sheet.getRange(sheetRow, COL.CHECKIN_TIME + 1).setValue(now);
+        sheet.getRange(sheetRow, COL.CHECKED_BY + 1).setValue(volunteerName);
+        
+        // Force flush for immediate persistence
+        SpreadsheetApp.flush(); 
+
+        return corsOutput({ success: true });
       }
-
-      // Update the sheet (sheet rows are 1-indexed)
-      const sheetRow = i + 1;
-      sheet.getRange(sheetRow, COL.STATUS + 1).setValue(CHECKED_IN_STATUS);
-      sheet.getRange(sheetRow, COL.CHECKIN_TIME + 1).setValue(new Date().toLocaleString());
-      sheet.getRange(sheetRow, COL.CHECKED_BY + 1).setValue(volunteerName || 'Volunteer');
-
-      return corsOutput({ success: true });
     }
+    return corsOutput({ success: false, reason: 'not_found', message: 'Ticket ID not found' });
+  } catch (err) {
+    return corsOutput({ success: false, message: 'Server Error: ' + err.toString() });
   }
-
-  return corsOutput({ success: false, reason: 'not_found', message: 'Ticket ID not found' });
 }
 
 // ─── EMAIL ──────────────────────────────────────────────────────
