@@ -292,15 +292,20 @@
     .delay-1 { animation-delay: 0.2s; }
     .delay-2 { animation-delay: 0.4s; }
     /* Logo Banner Styles */
-    .logo-banner-wrap {
-      width: 100%;
-      background: transparent;
-      padding: 30px 0 15px;
-      text-align: center;
+    /* Header & Branding Alignment */
+    .top-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 40px 15px;
       position: relative;
-      z-index: 1000;
+      max-width: 1400px;
+      margin: 0 auto;
     }
-    .logo-banner-wrap::after { display: none; }
+    .logo-banner-wrap {
+      flex: 0 1 auto;
+      text-align: center;
+    }
     .logo-banner-img {
       max-width: 95%;
       height: auto;
@@ -309,117 +314,113 @@
       box-shadow: 0 10px 50px rgba(0, 137, 123, 0.3);
       display: inline-block;
     }
+    .nav-reg-btn {
+      display: none;
+      position: absolute;
+      right: 40px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 100px;
+      font-weight: 700;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 20px rgba(0, 137, 123, 0.2);
+    }
+    @media (min-width: 1024px) {
+      .nav-reg-btn { display: inline-block; }
+    }
+
   </style>
 </head>
-<body>
-
-    <div class="cursor-glow" id="cursor-glow"></div>
+<body>    <div class="cursor-glow" id="cursor-glow"></div>
     <div class="hero-bg" id="hero-bg"></div>
     
-    <!-- ═══ HEADER LOGO BANNER ═══ -->
-    <div class="logo-banner-wrap">
-      <img src="files/assets/branding_banner.png" alt="DroneXperience Branding" class="logo-banner-img">
+    <!-- ═══ TOP BAR (LOGO + NAV) ═══ -->
+    <div class="top-bar">
+      <div class="logo-banner-wrap">
+        <img src="files/assets/branding_banner.png" alt="DroneXperience Branding" class="logo-banner-img">
+      </div>
+      <a href="files/index.html" class="nav-reg-btn">Register Now</a>
     </div>
 
     <div class="container" style="position: relative; z-index: 10;">
-      <header style="display: flex; justify-content: space-between; align-items: center; padding: 32px 0;">
-        <div class="date-item" style="font-weight: 600; font-size: 14px;">20th - 21st April 2026</div>
-        <a href="files/index.html" class="nav-reg-btn">Register Now</a>
-      </header>
-
-      <main>
-        <div class="hero-container">
-          <section class="hero-text animate">
-            <div class="badge">✦ Build, Fly & Innovate</div>
-            <h1>Drone<br/><span>Xperience</span></h1>
-            <p>A group of passionate aeronautical engineers founded Aero Knotz. Join us to learn about drone technology and start your journey in tech-driven innovation.</p>
-          </section>
-
-          <section class="hero-action animate delay-1" id="hero-card">
-            <a href="files/index.html" class="portal-card">
-              <div class="icon" style="font-size: 56px; margin-bottom: 24px; color: var(--primary);"><i class="fa-solid fa-id-card-clip"></i></div>
-              <h3>Register Now</h3>
-              <p style="margin-bottom:0;">Sign up as a participant to receive your official QR ticket. Certificates provided!</p>
-              <div class="btn-link">Proceed to Registration →</div>
-            </a>
-          </section>
+      <!-- PHASE 1: WORKSHOP DETAILS (TOP) -->
+      <section class="info-section animate" style="padding: 40px 0 20px;">
+        <div class="grid-4" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; text-align: center;">
+          <div class="info-box">
+            <h4>Venue</h4>
+            <p style="font-weight:700">TP2 - CLS 711</p>
+          </div>
+          <div class="info-box">
+            <h4>Workshop Fee</h4>
+            <p style="font-weight:700">Rs. 600/-</p>
+          </div>
+          <div class="info-box">
+            <h4>Event Date</h4>
+            <p style="font-weight:700">20th - 21st April 2026</p>
+          </div>
+          <div class="info-box">
+            <h4>Status</h4>
+            <p style="color:var(--primary); font-weight:700;">Registration Open</p>
+          </div>
         </div>
 
-
-        <div class="highlights-grid animate" style="animation-delay: 0.4s;">
+        <div class="highlights-grid animate" style="margin-top: 40px;">
           <div class="highlight-card">
             <i class="fa-solid fa-certificate"></i>
             <h4>Certificates</h4>
-            <p>Official certificates provided to all participants by the company.</p>
+            <p>Official recognition for all participants.</p>
           </div>
           <div class="highlight-card">
             <i class="fa-solid fa-file-signature"></i>
             <h4>OD Support</h4>
-            <p>Official On-Duty (OD) and necessary support documentation will be provided.</p>
+            <p>On-Duty attendance provided.</p>
           </div>
           <div class="highlight-card">
             <i class="fa-solid fa-pizza-slice"></i>
             <h4>Refreshments</h4>
-            <p>Complimentary refreshments and snacks provided for all attendees.</p>
+            <p>Food & drinks included.</p>
           </div>
           <div class="highlight-card">
             <i class="fa-solid fa-briefcase"></i>
             <h4>Internships</h4>
-            <p>The top 5 performers at the workshop will be offered direct internships.</p>
+            <p>Top 5 performers get offers.</p>
           </div>
         </div>
+      </section>
 
-        <section class="about-section animate" style="animation-delay: 0.6s;">
-          <div class="about-content">
-            <h4 style="color:var(--primary); text-transform:uppercase; letter-spacing:3px; font-size:12px; margin-bottom:16px;">About the Company</h4>
-            <h2>Aero Knotz Drones India</h2>
-            <p>A group of passionate aeronautical engineers founded Aero Knotz Drones India Pvt. Ltd. As a drone-based company, we believe learning about drone technology is a skill that will help our company succeed. We are your dedicated partner in improving children's education by combining real-world experiences with cutting-edge technology.</p>
-          </div>
-        </section>
-
-        <section class="team-section animate" style="animation-delay: 0.8s;">
-          <h2 class="section-title">Leadership & Convenors</h2>
-          <div class="team-grid">
-            <div class="team-group">
-              <h4>Convenors</h4>
-              <ul class="member-list">
-                <li>Dr. Kandan</li>
-                <li>Dr. Ida Seraphim B</li>
-                <li>Dr. Sowmiya B</li>
-              </ul>
-            </div>
-            <div class="team-group">
-              <h4>Co-Convenors</h4>
-              <ul class="member-list">
-                <li>Dr. Vidya Lakshmi M.K</li>
-                <li>Dr. Aswathy K Cherian</li>
-                <li>Dr. Robert C</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        <section class="info-section animate" style="animation-delay: 1s;">
-          <div class="container">
-            <div class="grid-4" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; text-align: center;">
-              <div class="info-box">
-                <h4>Venue</h4>
-                <p>TP2 - CLS 711</p>
+      <main>
+        <!-- PHASE 2: THE EXPERIENCE (MIDDLE) -->
+        <div class="hero-container" style="padding: 60px 0;">
+          <section class="hero-text animate">
+            <div class="badge">✦ Two-Day Immersive Workshop</div>
+            <h1>The Drone<br/><span>Xperience</span></h1>
+            <p style="font-size: 20px; max-width: 600px;">Get absolute hands-on experience in **building your own drone from scratch**. Over two intensive days, you'll master assembly, flight coding, and configuration—ending with a spectacular live flight session.</p>
+            
+            <div style="margin-top: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+              <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid var(--border);">
+                <span style="display:block; color:var(--primary); font-weight:800; margin-bottom:8px;">Day 1: Build</span>
+                <p style="font-size:13px; color:var(--text-muted);">Unbox components, learn aerodynamics, and assemble your craft from the ground up.</p>
               </div>
-              <div class="info-box">
-                <h4>Fee</h4>
-                <p>Rs. 600/-</p>
-              </div>
-              <div class="info-box">
-                <h4>Deadline</h4>
-                <p>Verify on Portal</p>
-              </div>
-              <div class="info-box">
-                <h4>Registration</h4>
-                <p>Now Open</p>
+              <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 20px; border: 1px solid var(--border);">
+                <span style="display:block; color:var(--primary); font-weight:800; margin-bottom:8px;">Day 2: Fly</span>
+                <p style="font-size:13px; color:var(--text-muted);">Calibration, safety checks, and taking to the skies in our supervised flight zone.</p>
               </div>
             </div>
-          </div>
+          </section>
+
+          <!-- PHASE 3: REGISTER (FINAL CALL) -->
+          <section class="hero-action animate delay-1" id="hero-card">
+            <a href="files/index.html" class="portal-card" style="box-shadow: 0 40px 80px rgba(0, 137, 123, 0.4);">
+              <div class="icon" style="font-size: 56px; margin-bottom: 24px; color: var(--primary);"><i class="fa-solid fa-id-card-clip"></i></div>
+              <h3>Join the Workshop</h3>
+              <p style="margin-bottom:20px;">Secure your spot today and receive your official QR ticket instantly.</p>
+              <div class="btn-link" style="background: var(--primary); color: white; padding: 12px 24px; border-radius: 12px;">Proceed to Registration →</div>
+            </a>
+          </section>
+        </div>
         </section>
       </main>
 
