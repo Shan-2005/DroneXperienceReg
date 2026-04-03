@@ -480,7 +480,7 @@
             <i class="fas fa-info-circle"></i> If the app asks, enter <strong>₹600</strong> and Note: <strong id="note-reminder">DX-XXX</strong>
           </p>
           <a href="#" class="upi-app-btn" id="gpay-btn">
-            <span class="app-icon"><i class="fab fa-google-pay upi-brand-gpay"></i></span>
+            <span class="app-icon"><i class="fab fa-google upi-brand-gpay"></i></span>
             <span class="app-name">Google Pay</span>
             <span class="app-arrow">→</span>
           </a>
@@ -699,10 +699,10 @@ function updatePaymentDisplay() {
     encodeURIComponent(upiLink) + '&color=000000&bgcolor=ffffff';
   document.getElementById('payment-qr').src = qrUrl;
 
-  // Set UPI app deep links
-  document.getElementById('gpay-btn').href    = 'tez://upi/pay?' + upiParams.toString();
-  document.getElementById('phonepe-btn').href = 'phonepe://pay?' + upiParams.toString();
-  document.getElementById('paytm-btn').href   = 'paytmmp://pay?' + upiParams.toString();
+  // Set UPI app deep links (Using universal upi://pay for maximum bank compatibility)
+  document.getElementById('gpay-btn').href    = upiLink;
+  document.getElementById('phonepe-btn').href = upiLink;
+  document.getElementById('paytm-btn').href   = upiLink;
   document.getElementById('generic-btn').href = upiLink;
 
   // Device detection: show correct UI
