@@ -292,8 +292,7 @@
       background: #fff;
       padding: 12px 0;
       text-align: center;
-      position: sticky;
-      top: 0;
+      position: relative; /* Scrolls with the page */
       z-index: 1000;
     }
     .logo-banner-wrap::after {
@@ -302,7 +301,7 @@
       bottom: 0;
       left: 0;
       right: 0;
-      height: 3px;
+      height: 4px;
       background: linear-gradient(90deg, var(--accent), #4db6ac);
     }
     .logo-banner-img {
