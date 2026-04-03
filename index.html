@@ -326,16 +326,25 @@
       .team-group h4 { margin-bottom: 16px; }
       .member-list li { font-size: 14px; margin-bottom: 8px; }
 
-      /* Final CTA - Focused */
-      .portal-card { padding: 40px 20px !important; border-radius: 28px !important; }
+      /* Content Sequence - Register after Workshop */
+      main { display: flex; flex-direction: column; }
+      .hero-container { order: 1; padding: 30px 0 0 !important; }
+      #register-now { order: 2; margin: 30px 0 !important; }
+      .info-section { order: 3; padding-top: 0 !important; }
+      .team-section { order: 4; margin: 30px 0 !important; }
+      .about-section { order: 5; margin: 30px 0 !important; }
+
+      /* Final CTA Refinement */
+      .portal-card { 
+        padding: 40px 20px !important; 
+        border-radius: 28px !important; 
+        border: 2px solid var(--primary);
+        background: radial-gradient(circle at top right, rgba(0, 137, 123, 0.1), transparent);
+      }
       .portal-card .icon { font-size: 48px !important; margin-bottom: 16px !important; }
       .portal-card h2 { font-size: 24px !important; }
       .portal-card p { font-size: 14px !important; margin-bottom: 24px !important; }
-      .btn-link { padding: 14px !important; font-size: 16px !important; }
-      .portal-card .icon { font-size: 64px !important; }
-      .portal-card h2 { font-size: 28px !important; }
-      .portal-card p { font-size: 16px !important; }
-      .btn-link { width: 100%; justify-content: center; padding: 18px !important; font-size: 18px !important; }
+      .btn-link { padding: 14px !important; font-size: 16px !important; width: 100%; justify-content: center; }
     }
 
     .member-list { list-style: none; }
