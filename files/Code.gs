@@ -13,26 +13,33 @@ const TICKET_PREFIX = 'DX';
 const AMOUNT        = '₹600';
 const PENDING_APPROVAL_STATUS = 'PendingApproval';
 const APPROVED_STATUS         = 'Approved';
-const CHECKED_IN_STATUS      = 'Yes';
+// ─── HELPER: Dynamic Header Mapping ──────────────────────────────
+function getColMap(sheet) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const map = {
+    TICKET_ID:    9,  // default fallback (J)
+    STATUS:       12, // default fallback (M)
+    CHECKIN_TIME: 13, // default fallback (N)
+    NAME:         1,  // default fallback (B)
+    EMAIL:        2,  // default fallback (C)
+    PHONE:        7,  // default fallback (H)
+    ORG:          8,  // default fallback (I)
+  };
+  
+  headers.forEach((h, i) => {
+    const text = String(h).toLowerCase().trim();
+    if (text.includes('ticket id')) map.TICKET_ID = i;
+    else if (text === 'status') map.STATUS = i;
+    else if (text.includes('check-in time')) map.CHECKIN_TIME = i;
+    else if (text === 'name') map.NAME = i;
+    else if (text === 'email') map.EMAIL = i;
+    else if (text === 'phone' || text === 'mobile') map.PHONE = i;
+    else if (text === 'organization' || text === 'college' || text === 'org') map.ORG = i;
+  });
+  return map;
+}
 
-// Column indices (0-based) — match your sheet exactly
-const COL = {
-  TIMESTAMP:    0,
-  NAME:         1,
-  EMAIL:        2,
-  DEPT:         3,
-  YEAR:         4,
-  DEGREE:       5,
-  REG_NO:       6,
-  PHONE:        7,
-  ORG:          8,
-  TICKET_ID:    9,
-  PAYMENT_REF:  10,   // provisional ticket ID used as payment note
-  SCREENSHOT:   11,   // Google Drive URL of payment screenshot
-  STATUS:       12,
-  CHECKIN_TIME: 13,
-  CHECKED_BY:   14,
-};
+const CHECKED_IN_STATUS = 'Checked-In';
 
 // ─── CORS HELPER ────────────────────────────────────────────────
 function corsOutput(data) {
@@ -66,6 +73,7 @@ function doGet(e) {
     const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
     const sheet = ss.getSheetByName(SHEET_NAME);
     const data  = sheet.getDataRange().getValues();
+    const COL   = getColMap(sheet);
 
     // Row 0 is header; search from row 1
     for (let i = 1; i < data.length; i++) {
@@ -81,11 +89,6 @@ function doGet(e) {
           ticketId:    row[COL.TICKET_ID],
           checkedIn:   String(row[COL.STATUS]).trim(),
           checkinTime: row[COL.CHECKIN_TIME] ? String(row[COL.CHECKIN_TIME]) : '',
-          checkedBy:   row[COL.CHECKED_BY],
-          dept:        row[COL.DEPT] || '',
-          year:        row[COL.YEAR] || '',
-          degree:      row[COL.DEGREE] || '',
-          regno:       row[COL.REG_NO] || '',
         });
       }
     }
@@ -243,7 +246,6 @@ function getOrCreateFolder(folderName) {
 // ─── CHECK IN ───────────────────────────────────────────────────
 function handleCheckin(body) {
   const ticketId = (body.ticketId || '').trim().toUpperCase();
-  const volunteerName = (body.volunteerName || 'Volunteer').trim();
   
   if (!ticketId) return corsOutput({ success: false, message: 'Missing ticketId' });
 
@@ -253,18 +255,18 @@ function handleCheckin(body) {
     if (!sheet) return corsOutput({ success: false, message: `Sheet ${SHEET_NAME} not found` });
 
     const data  = sheet.getDataRange().getValues();
+    const COL   = getColMap(sheet);
 
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
       const sheetTicketId = String(row[COL.TICKET_ID] || '').trim().toUpperCase();
       
       if (sheetTicketId === ticketId) {
-        if (String(row[COL.STATUS]).trim() === CHECKED_IN_STATUS) {
+        if (String(row[COL.STATUS]).trim().toLowerCase() === CHECKED_IN_STATUS.toLowerCase()) {
           return corsOutput({
             success:  false,
             reason:   'already_checked_in',
             time:     String(row[COL.CHECKIN_TIME]),
-            by:       row[COL.CHECKED_BY],
           });
         }
 
@@ -275,7 +277,6 @@ function handleCheckin(body) {
         // Update values
         sheet.getRange(sheetRow, COL.STATUS + 1).setValue(CHECKED_IN_STATUS);
         sheet.getRange(sheetRow, COL.CHECKIN_TIME + 1).setValue(now);
-        sheet.getRange(sheetRow, COL.CHECKED_BY + 1).setValue(volunteerName);
         
         // Force flush for immediate persistence
         SpreadsheetApp.flush(); 
