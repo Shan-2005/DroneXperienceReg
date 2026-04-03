@@ -15,26 +15,29 @@ const PENDING_APPROVAL_STATUS = 'PendingApproval';
 const APPROVED_STATUS         = 'Approved';
 // ─── HELPER: Dynamic Header Mapping ──────────────────────────────
 function getColMap(sheet) {
-  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const headers = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 15)).getValues()[0];
   const map = {
-    TICKET_ID:    9,  // default fallback (J)
-    STATUS:       12, // default fallback (M)
-    CHECKIN_TIME: 13, // default fallback (N)
-    NAME:         1,  // default fallback (B)
-    EMAIL:        2,  // default fallback (C)
-    PHONE:        7,  // default fallback (H)
-    ORG:          8,  // default fallback (I)
+    TIMESTAMP:    0,  NAME: 1, EMAIL: 2, DEPT: 3, YEAR: 4, DEGREE: 5, REG_NO: 6,
+    PHONE:        7,  ORG: 8, TICKET_ID: 9, PAYMENT_REF: 10, SCREENSHOT: 11,
+    STATUS:       12, CHECKIN_TIME: 13
   };
   
   headers.forEach((h, i) => {
     const text = String(h).toLowerCase().trim();
-    if (text.includes('ticket id')) map.TICKET_ID = i;
-    else if (text === 'status') map.STATUS = i;
-    else if (text.includes('check-in time')) map.CHECKIN_TIME = i;
+    if (text.includes('stamp')) map.TIMESTAMP = i;
     else if (text === 'name') map.NAME = i;
     else if (text === 'email') map.EMAIL = i;
+    else if (text === 'department' || text === 'dept') map.DEPT = i;
+    else if (text === 'year') map.YEAR = i;
+    else if (text === 'degree') map.DEGREE = i;
+    else if (text.includes('reg no')) map.REG_NO = i;
     else if (text === 'phone' || text === 'mobile') map.PHONE = i;
     else if (text === 'organization' || text === 'college' || text === 'org') map.ORG = i;
+    else if (text.includes('ticket id')) map.TICKET_ID = i;
+    else if (text.includes('payment') || text.includes('ref')) map.PAYMENT_REF = i;
+    else if (text.includes('screenshot')) map.SCREENSHOT = i;
+    else if (text === 'status') map.STATUS = i;
+    else if (text.includes('check-in time')) map.CHECKIN_TIME = i;
   });
   return map;
 }
@@ -186,12 +189,13 @@ function approveParticipant(body) {
   const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
   const sheet = ss.getSheetByName(SHEET_NAME);
   const data  = sheet.getDataRange().getValues();
+  const COL   = getColMap(sheet);
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (String(row[COL.TICKET_ID]).trim().toUpperCase() === ticketId.trim().toUpperCase()) {
+    if (String(row[COL.TICKET_ID] || '').trim().toUpperCase() === ticketId.trim().toUpperCase()) {
       
-      if (row[COL.STATUS] !== 'PendingApproval') {
+      if (String(row[COL.STATUS] || '').trim() !== 'PendingApproval') {
         return corsOutput({ success: false, message: 'Already approved or checked in' });
       }
 
@@ -217,20 +221,20 @@ function getPendingApprovals() {
 
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
-    if (row[COL.STATUS] === 'PendingApproval') {
+    if (String(row[COL.STATUS] || '').trim() === 'PendingApproval') {
       pending.push({
-        timestamp:  row[0],
+        timestamp:  row[COL.TIMESTAMP],
         name:       row[COL.NAME],
         email:      row[COL.EMAIL],
         phone:      row[COL.PHONE],
         org:        row[COL.ORG],
         ticketId:   row[COL.TICKET_ID],
-        paymentRef: row[10],
-        screenshot: row[11],
-        dept:       row[3] || '',
-        year:       row[4] || '',
-        degree:     row[5] || '',
-        regno:      row[6] || ''
+        paymentRef: row[COL.PAYMENT_REF],
+        screenshot: row[COL.SCREENSHOT],
+        dept:       row[COL.DEPT] || '',
+        year:       row[COL.YEAR] || '',
+        degree:     row[COL.DEGREE] || '',
+        regno:      row[COL.REG_NO] || ''
       });
     }
   }
@@ -407,7 +411,9 @@ function getAdminDashboardData(user, pass) {
       dept:       row[COL.DEPT] || '',
       year:       row[COL.YEAR] || '',
       degree:     row[COL.DEGREE] || '',
-      regno:      row[COL.REG_NO] || ''
+      regno:      row[COL.REG_NO] || '',
+      paymentRef: row[COL.PAYMENT_REF] || '',
+      screenshot: row[COL.SCREENSHOT] || ''
     });
   }
 
