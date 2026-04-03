@@ -70,7 +70,8 @@ function doGet(e) {
     // Row 0 is header; search from row 1
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (String(row[COL.TICKET_ID]).trim().toUpperCase() === ticketId) {
+      const sheetTicketId = String(row[COL.TICKET_ID] || '').trim().toUpperCase();
+      if (sheetTicketId === ticketId) {
         return corsOutput({
           found:       true,
           name:        row[COL.NAME],
@@ -78,7 +79,7 @@ function doGet(e) {
           phone:       row[COL.PHONE],
           org:         row[COL.ORG],
           ticketId:    row[COL.TICKET_ID],
-          checkedIn:   row[COL.STATUS],
+          checkedIn:   String(row[COL.STATUS]).trim(),
           checkinTime: row[COL.CHECKIN_TIME] ? String(row[COL.CHECKIN_TIME]) : '',
           checkedBy:   row[COL.CHECKED_BY],
           dept:        row[COL.DEPT] || '',
@@ -241,16 +242,6 @@ function getOrCreateFolder(folderName) {
 
 // ─── CHECK IN ───────────────────────────────────────────────────
 function handleCheckin(body) {
-  const { ticketId, volunteerName } = body;
-  if (!ticketId) return corsOutput({ success: false, message: 'Missing ticketId' });
-
-  const ss    = SpreadsheetApp.openById('1F1RBhjAv8OhSD2caT4DckocgnrkjRFHiM6-v-L1iKYA');
-  const sheet = ss.getSheetByName(SHEET_NAME);
-  const data  = sheet.getDataRange().getValues();
-
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    if (String(row[COL.TICKET_ID]).trim().toUpperCase() === ticketId.trim().toUpperCase()) {
 
       if (String(row[COL.STATUS]).trim() === CHECKED_IN_STATUS) {
         return corsOutput({
