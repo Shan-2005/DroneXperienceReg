@@ -1001,6 +1001,95 @@
       box-shadow: 0 10px 50px rgba(0, 137, 123, 0.3);
       display: inline-block;
     }
+    /* Modal Overlay & Card */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: var(--surface2);
+      border: 1px solid var(--gold);
+      border-radius: 24px;
+      max-width: 450px;
+      width: 100%;
+      padding: 32px;
+      box-shadow: 0 20px 80px rgba(245, 200, 66, 0.15);
+      animation: modalFadeIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .modal-title {
+      font-family: var(--head);
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-instr {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .modal-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .modal-item i {
+      font-size: 20px;
+      color: var(--gold);
+      margin-top: 2px;
+    }
+
+    .modal-item-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .modal-item-text strong {
+      color: var(--gold);
+    }
+
+    .modal-btn {
+      width: 100%;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-family: var(--head);
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(245, 200, 66, 0.3);
+    }
   </style>
 </head>
 
@@ -1009,6 +1098,31 @@
   <!-- ═══ HEADER LOGO BANNER ═══ -->
   <div class="logo-banner-wrap">
     <img src="assets/branding_banner.png" alt="DroneXperience Branding" class="logo-banner-img">
+  </div>
+
+  <!-- Payment Instructions Modal -->
+  <div class="modal-overlay" id="payment-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <i class="fas fa-exclamation-circle" style="font-size: 40px;"></i>
+        Important Payment Info
+      </div>
+      <div class="modal-instr">
+        <div class="modal-item">
+          <i class="fas fa-wallet"></i>
+          <div class="modal-item-text">Pay exactly <strong>₹600</strong> for the registration fee.</div>
+        </div>
+        <div class="modal-item">
+          <i class="fas fa-keyboard"></i>
+          <div class="modal-item-text">You <strong>MUST</strong> enter your Unique Tag Line: <strong id="modal-tagline">DX-XXXX</strong> as the <strong>Payment Note</strong>.</div>
+        </div>
+        <div class="modal-item">
+          <i class="fas fa-camera"></i>
+          <div class="modal-item-text">Screenshot <strong>MUST</strong> clearly show the <strong>UPI Transaction ID</strong> and the <strong>Tag Line</strong>.</div>
+        </div>
+      </div>
+      <button class="modal-btn" onclick="confirmModal()">I Agree &amp; Proceed</button>
+    </div>
   </div>
 
   <div class="page-wrap">
@@ -1321,9 +1435,19 @@
       // Generate provisional ticket ID for payment reference
       tempTicketId = genProvisionalId();
       document.getElementById('ticket-id-display').textContent = tempTicketId;
+      document.getElementById('modal-tagline').textContent = tempTicketId; // Show in modal too
 
+      // Show the mandatory instructions modal
+      document.getElementById('payment-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden'; // Prevent scroll
+    }
+
+    function confirmModal() {
+      // Close modal and proceed to payment step
+      document.getElementById('payment-modal').style.display = 'none';
+      document.body.style.overflow = '';
+      
       updatePaymentDisplay();
-
       goToStep(2);
     }
 
