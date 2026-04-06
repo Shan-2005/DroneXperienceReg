@@ -1178,6 +1178,41 @@
     </div>
   </div>
 
+  <!-- Final Confirmation Modal -->
+  <div class="modal-overlay" id="final-modal">
+    <div class="modal-card" style="border-color: var(--green); box-shadow: 0 20px 80px rgba(16, 185, 129, 0.15);">
+      <div class="modal-title" style="color: var(--green);">
+        <i class="fas fa-check-double" style="font-size: 40px;"></i>
+        Final Confirmation
+      </div>
+      <div class="modal-instr">
+        <p style="font-size: 14px; text-align: center; margin-bottom: 10px; color: var(--muted);">Please confirm you have done the following:</p>
+        <div class="modal-item">
+          <i class="fas fa-check-circle" style="color: var(--green);"></i>
+          <div class="modal-item-text">Paid exactly <strong>₹600</strong>.</div>
+        </div>
+        <div class="modal-item">
+          <i class="fas fa-check-circle" style="color: var(--green);"></i>
+          <div class="modal-item-text">Included Tag Line <strong id="final-modal-tagline"></strong> in payment note.</div>
+        </div>
+        <div class="modal-item">
+          <i class="fas fa-check-circle" style="color: var(--green);"></i>
+          <div class="modal-item-text">Screenshot shows <strong>UPI ID</strong> and <strong>Tag Line</strong>.</div>
+        </div>
+        
+        <div style="margin-top: 10px; padding: 12px; background: rgba(255, 255, 255, 0.03); border-radius: 12px; border: 1px solid var(--border);">
+            <p style="font-size: 11px; color: var(--muted); line-height: 1.4;">
+                <i class="fas fa-info-circle" style="color: var(--gold); margin-right: 4px;"></i> 
+                <strong>Forgot the Tag Line?</strong> If you missed adding the tag line in your payment, please message the UPI ID (<code>areojoeshan2005@okaxis</code>) with your <strong>Tag Line</strong> and <strong>Transaction ID</strong>.
+            </p>
+        </div>
+      </div>
+      
+      <button class="modal-btn" style="background: var(--green); margin-bottom: 12px;" onclick="actuallySubmit()">Yes, Everything is Correct</button>
+      <button class="btn btn-outline" style="margin-top: 0; width: 100%;" onclick="closeFinalModal()">No, Let me Check</button>
+    </div>
+  </div>
+
   <div class="page-wrap">
 
     <!-- HEADER -->
@@ -1625,6 +1660,21 @@
         return;
       }
 
+      // Show final confirmation modal instead of immediate submit
+      document.getElementById('final-modal-tagline').textContent = tempTicketId;
+      document.getElementById('final-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFinalModal() {
+        document.getElementById('final-modal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    async function actuallySubmit() {
+      closeFinalModal();
+      
+      const errEl = document.getElementById('pay-error');
       const btn = document.getElementById('btn-submit');
       btn.classList.add('loading'); btn.disabled = true;
 
