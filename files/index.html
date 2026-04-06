@@ -1,331 +1,929 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DroneXperience Workshop Registration</title>
   <meta name="description" content="Register for DroneXperience 2026 Workshop and pay securely via UPI." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --bg:       #0a0a0f;
-      --surface:  rgba(30, 41, 59, 0.7);
+      --bg: #0a0a0f;
+      --surface: rgba(30, 41, 59, 0.7);
       --surface2: rgba(15, 23, 42, 0.9);
-      --border:   rgba(255, 255, 255, 0.1);
-      --accent:   #00897b;
+      --border: rgba(255, 255, 255, 0.1);
+      --accent: #00897b;
       --accent-glow: rgba(0, 137, 123, 0.3);
-      --gold:     #f5c842;
-      --green:    #10b981;
-      --text:     #f8fafc;
-      --muted:    #94a3b8;
-      --radius:   24px;
-      --head:     'Syne', sans-serif;
-      --body:     'Inter', sans-serif;
+      --gold: #f5c842;
+      --green: #10b981;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --radius: 24px;
+      --head: 'Syne', sans-serif;
+      --body: 'Inter', sans-serif;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      background: var(--bg); color: var(--text);
-      font-family: var(--body); min-height: 100vh; overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
+
     body::before {
-      content: ''; position: fixed; inset: 0; z-index: -1;
-      background: 
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
         radial-gradient(circle at 15% 15%, rgba(0, 137, 123, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 85% 85%, rgba(0, 137, 123, 0.1) 0%, transparent 50%);
       pointer-events: none;
     }
+
     .page-wrap {
-      position: relative; z-index: 1;
-      max-width: 600px; margin: 0 auto; padding: 32px 20px 80px;
+      position: relative;
+      z-index: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
     }
 
     /* ─── PROGRESS BAR ───────────────────────────────────────────── */
     .progress-bar {
-      display: flex; align-items: center; justify-content: center;
-      gap: 0; margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 40px;
     }
+
     .step-dot {
-      width: 40px; height: 40px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--head); font-size: 14px; font-weight: 800;
-      border: 1px solid var(--border); color: var(--muted);
-      background: rgba(255,255,255,0.03); transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative; z-index: 1;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--head);
+      font-size: 14px;
+      font-weight: 800;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+      transition: all .4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
     }
-    .step-dot.active   { border-color: var(--accent); color: #fff; background: var(--accent); box-shadow: 0 0 20px var(--accent-glow); }
-    .step-dot.done     { border-color: var(--green);  color: #fff; background: var(--green); }
+
+    .step-dot.active {
+      border-color: var(--accent);
+      color: #fff;
+      background: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .step-dot.done {
+      border-color: var(--green);
+      color: #fff;
+      background: var(--green);
+    }
+
     .step-line {
-      width: 80px; height: 2px; background: var(--border); transition: background .4s;
+      width: 80px;
+      height: 2px;
+      background: var(--border);
+      transition: background .4s;
     }
-    .step-line.done { background: var(--green); }
+
+    .step-line.done {
+      background: var(--green);
+    }
+
     .step-labels {
-      display: flex; justify-content: space-between;
-      margin-top: 10px; margin-bottom: 40px;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      margin-bottom: 40px;
     }
+
     .step-lbl {
-      font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-      color: var(--muted); text-align: center; flex: 1;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: center;
+      flex: 1;
     }
-    .step-lbl.active { color: var(--accent); }
-    .step-lbl.done   { color: var(--green); }
+
+    .step-lbl.active {
+      color: var(--accent);
+    }
+
+    .step-lbl.done {
+      color: var(--green);
+    }
 
     /* ─── HEADER ─────────────────────────────────────────────────── */
-    .site-header { text-align: center; margin-bottom: 48px; }
+    .site-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
     .event-badge {
       display: inline-block;
       background: rgba(0, 137, 123, 0.1);
       border: 1px solid var(--accent);
-      color: #72dfd0; font-family: var(--head); font-size: 11px; font-weight: 700;
-      letter-spacing: .15em; text-transform: uppercase;
-      padding: 6px 18px; border-radius: 100px; margin-bottom: 20px;
+      color: #72dfd0;
+      font-family: var(--head);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      padding: 6px 18px;
+      border-radius: 100px;
+      margin-bottom: 20px;
     }
+
     .site-header h1 {
-      font-family: var(--head); font-size: 2.8rem;
-      font-weight: 800; line-height: 1.1; letter-spacing: -.03em;
+      font-family: var(--head);
+      font-size: 2.8rem;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -.03em;
     }
+
     .site-header h1 span {
       background: linear-gradient(90deg, var(--accent), #4db6ac);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+
     .event-meta {
-      display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-top: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 12px;
     }
-    .event-meta-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
+
+    .event-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
 
     /* ─── CARD ───────────────────────────────────────────────────── */
     .card {
-      background: var(--surface); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--border);
-      border-radius: var(--radius); padding: 48px 40px;
-      position: relative; overflow: hidden;
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
       animation: fadeUp .6s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
+
     .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0;
-      height: 4px; background: linear-gradient(90deg, var(--accent), #4db6ac);
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), #4db6ac);
     }
-    .step-payment .card::before { background: var(--gold); }
-    .step-ticket  .card::before { background: var(--green); }
+
+    .step-payment .card::before {
+      background: var(--gold);
+    }
+
+    .step-ticket .card::before {
+      background: var(--green);
+    }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ─── FORM ───────────────────────────────────────────────────── */
-    .form-title { font-family: var(--head); font-size: 1.5rem; font-weight: 800; margin-bottom: 32px; color: #fff; }
-    .form-group { margin-bottom: 24px; }
-    label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-    input, select {
-      width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-      border-radius: 16px; padding: 16px 20px;
-      font-family: var(--body); font-size: 16px; color: var(--text);
-      transition: all .3s ease; outline: none;
+    .form-title {
+      font-family: var(--head);
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 32px;
+      color: #fff;
     }
-    input::placeholder { color: #4b5563; }
-    input:focus, select:focus {
-      border-color: var(--accent); background: rgba(0,0,0,0.5); box-shadow: 0 0 0 4px var(--accent-glow);
+
+    .form-group {
+      margin-bottom: 24px;
     }
-    input.error { border-color: #ef4444; }
-    .field-error { font-size: 12px; color: #ef4444; margin-top: 8px; display: none; font-weight: 600; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      font-family: var(--body);
+      font-size: 16px;
+      color: var(--text);
+      transition: all .3s ease;
+      outline: none;
+    }
+
+    input::placeholder {
+      color: #4b5563;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      background: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+
+    input.error {
+      border-color: #ef4444;
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: #ef4444;
+      margin-top: 8px;
+      display: none;
+      font-weight: 600;
+    }
 
     /* ─── BUTTON ─────────────────────────────────────────────────── */
     .btn {
-      width: 100%; padding: 15px; border: none; border-radius: 12px;
-      font-family: var(--head); font-size: 15px; font-weight: 700;
-      cursor: pointer; transition: opacity .2s, transform .15s, box-shadow .2s;
-      position: relative; overflow: hidden;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 12px;
+      font-family: var(--head);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .2s, transform .15s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
     }
+
     .btn-primary {
       background: var(--accent);
       color: #fff;
     }
-    .btn-primary:hover:not(:disabled) { opacity: .92; transform: translateY(-1px); box-shadow: 0 8px 30px var(--accent-glow); }
-    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-success {
-      background: linear-gradient(135deg, var(--green), #059669); color: #fff;
+
+    .btn-primary:hover:not(:disabled) {
+      opacity: .92;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px var(--accent-glow);
     }
-    .btn-success:hover:not(:disabled) { opacity: .92; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(16,185,129,0.3); }
-    .btn-success:disabled { opacity: .5; cursor: not-allowed; }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--green), #059669);
+      color: #fff;
+    }
+
+    .btn-success:hover:not(:disabled) {
+      opacity: .92;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-success:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
     .btn-outline {
-      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
       margin-top: 10px;
     }
-    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-    .btn .spinner { display: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto; }
-    .btn.loading .btn-text { display: none; }
-    .btn.loading .spinner { display: block; }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .btn .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 0 auto;
+    }
+
+    .btn.loading .btn-text {
+      display: none;
+    }
+
+    .btn.loading .spinner {
+      display: block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ─── STEP SECTIONS ──────────────────────────────────────────── */
-    .step-section { display: none; }
-    .step-section.active { display: block; animation: fadeUp .4s ease; }
+    .step-section {
+      display: none;
+    }
+
+    .step-section.active {
+      display: block;
+      animation: fadeUp .4s ease;
+    }
 
     /* ─── PAYMENT PAGE ───────────────────────────────────────────── */
     .amount-badge {
-      text-align: center; margin-bottom: 24px;
-      background: rgba(245,200,66,0.05);
-      border: 1px solid rgba(245,200,66,.2); border-radius: 16px; padding: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      background: rgba(245, 200, 66, 0.05);
+      border: 1px solid rgba(245, 200, 66, .2);
+      border-radius: 16px;
+      padding: 24px;
     }
-    .amount-badge .label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
-    .amount-badge .amount { font-family: var(--head); font-size: 3rem; font-weight: 800; color: var(--gold); }
-    .amount-badge .note { font-size: 13px; color: var(--muted); margin-top: 6px; }
+
+    .amount-badge .label {
+      font-size: 11px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .amount-badge .amount {
+      font-family: var(--head);
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .amount-badge .note {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
 
     /* UPI ID copy bar */
     .upi-bar {
-      display: flex; align-items: center; gap: 10px; padding: 14px 18px;
-      background: rgba(0,0,0,0.2); border: 1px solid var(--border);
-      border-radius: 12px; margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 20px;
     }
-    .upi-bar .upi-id { flex: 1; font-size: 14px; font-weight: 600; color: var(--text); font-family: monospace; letter-spacing: .04em; }
+
+    .upi-bar .upi-id {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      font-family: monospace;
+      letter-spacing: .04em;
+    }
+
     .copy-btn {
-      background: rgba(0, 137, 123, 0.1); border: 1px solid rgba(0, 137, 123, 0.3); color: var(--accent);
-      padding: 8px 16px; border-radius: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
-      font-family: var(--head); transition: all .2s;
+      background: rgba(0, 137, 123, 0.1);
+      border: 1px solid rgba(0, 137, 123, 0.3);
+      color: var(--accent);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--head);
+      transition: all .2s;
     }
-    .copy-btn:hover { background: var(--accent); color: #fff; }
+
+    .copy-btn:hover {
+      background: var(--accent);
+      color: #fff;
+    }
 
     /* Payment note chip */
     .note-chip {
-      display: flex; align-items: center; gap: 8px; padding: 12px 18px;
-      background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.2);
-      border-radius: 12px; margin-bottom: 24px; font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 18px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 12px;
+      margin-bottom: 24px;
+      font-size: 14px;
     }
-    .note-chip .key { color: var(--muted); }
-    .note-chip .val { font-weight: 800; color: var(--green); font-family: monospace; letter-spacing: .05em; }
-    .note-chip .copy-note { margin-left: auto; cursor: pointer; font-size: 18px; transition: transform 0.2s; }
-    .note-chip .copy-note:hover { transform: scale(1.1); }
+
+    .note-chip .key {
+      color: var(--muted);
+    }
+
+    .note-chip .val {
+      font-weight: 800;
+      color: var(--green);
+      font-family: monospace;
+      letter-spacing: .05em;
+    }
+
+    .note-chip .copy-note {
+      margin-left: auto;
+      cursor: pointer;
+      font-size: 18px;
+      transition: transform 0.2s;
+    }
+
+    .note-chip .copy-note:hover {
+      transform: scale(1.1);
+    }
 
     /* QR / app section */
-    .pay-method-wrap { margin-bottom: 24px; }
-    .pay-method-title { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; text-align: center; }
-
-    /* Mobile UPI buttons */
-    .upi-btns { display: flex; flex-direction: column; gap: 12px; }
-    .upi-app-btn {
-      display: flex; align-items: center; gap: 16px; padding: 16px 20px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: 16px; text-decoration: none; color: var(--text);
-      font-family: var(--head); font-size: 15px; font-weight: 700;
-      transition: all .2s;
+    .pay-method-wrap {
+      margin-bottom: 24px;
     }
-    .upi-app-btn:hover { border-color: var(--accent); background: rgba(0, 137, 123, 0.05); transform: translateX(4px); }
-    .alternate-wrap { 
-      margin-top: 24px; padding: 16px; border-radius: 16px; 
-      border: 1px solid rgba(255,193,7,0.2); background: rgba(255,193,7,0.02);
+
+    .pay-method-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
       text-align: center;
     }
-    .alternate-text { font-size: 11px; color: #ffca28; margin-bottom: 12px; display: block; font-weight: 600; line-height: 1.4; }
+
+    /* Mobile UPI buttons */
+    .upi-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .upi-app-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--text);
+      font-family: var(--head);
+      font-size: 15px;
+      font-weight: 700;
+      transition: all .2s;
+    }
+
+    .upi-app-btn:hover {
+      border-color: var(--accent);
+      background: rgba(0, 137, 123, 0.05);
+      transform: translateX(4px);
+    }
+
+    .alternate-wrap {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 193, 7, 0.2);
+      background: rgba(255, 193, 7, 0.02);
+      text-align: center;
+    }
+
+    .alternate-text {
+      font-size: 11px;
+      color: #ffca28;
+      margin-bottom: 12px;
+      display: block;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
     .btn-alt {
-      background: rgba(255,193,7,0.1); border: 1px solid #ffca28; color: #ffca28;
-      padding: 8px 16px; border-radius: 100px; font-size: 11px; font-weight: 800;
-      cursor: pointer; transition: all 0.2s; font-family: var(--head);
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid #ffca28;
+      color: #ffca28;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--head);
     }
-    .btn-alt:hover { background: #ffca28; color: #000; }
-    
+
+    .btn-alt:hover {
+      background: #ffca28;
+      color: #000;
+    }
+
     .bank-details-box {
-      margin-top: 20px; padding: 20px; border-radius: 16px;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      display: none; animation: fadeUp 0.3s ease;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      display: none;
+      animation: fadeUp 0.3s ease;
     }
-    .bank-info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; }
-    .bank-info-row span:first-child { color: var(--muted); }
-    .bank-info-row span:last-child { color: #fff; font-weight: 700; font-family: monospace; }
-    
+
+    .bank-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+
+    .bank-info-row span:first-child {
+      color: var(--muted);
+    }
+
+    .bank-info-row span:last-child {
+      color: #fff;
+      font-weight: 700;
+      font-family: monospace;
+    }
+
     .support-bar {
-      margin-top: 32px; padding: 16px; border-radius: 16px;
-      background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.1);
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      margin-top: 32px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(16, 185, 129, 0.05);
+      border: 1px solid rgba(16, 185, 129, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
-    .support-text { font-size: 12px; color: var(--green); font-weight: 600; }
+
+    .support-text {
+      font-size: 12px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
     .btn-support {
-      background: #25d366; color: #fff; border: none; padding: 8px 16px; border-radius: 100px;
-      font-size: 11px; font-weight: 800; cursor: pointer; text-decoration: none; display: flex; align-items: center; gap: 6px;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .upi-app-btn .app-icon { font-size: 24px; line-height: 1; display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); }
-    .upi-app-btn .app-name { flex: 1; }
-    .upi-app-btn .app-arrow { color: var(--muted); font-size: 20px; }
-    .upi-brand-gpay    { color: #4285F4; }
-    .upi-brand-phonepe { color: #6739b7; }
-    .upi-brand-paytm   { color: #00baf2; }
+
+    .upi-app-btn .app-icon {
+      font-size: 24px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .upi-app-btn .app-name {
+      flex: 1;
+    }
+
+    .upi-app-btn .app-arrow {
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    .upi-brand-gpay {
+      color: #4285F4;
+    }
+
+    .upi-brand-phonepe {
+      color: #6739b7;
+    }
+
+    .upi-brand-paytm {
+      color: #00baf2;
+    }
 
     /* Desktop QR */
     .qr-block {
       text-align: center;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      border-radius: 20px; padding: 32px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
     }
+
     .qr-block img {
-      width: 200px; height: 200px; border-radius: 16px;
-      background: #fff; padding: 12px; display: block; margin: 0 auto 16px;
+      width: 200px;
+      height: 200px;
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px;
+      display: block;
+      margin: 0 auto 16px;
     }
-    .qr-block .qr-label { font-size: 14px; color: var(--muted); }
-    .qr-block .qr-upi   { font-size: 13px; color: var(--accent); font-weight: 700; margin-top: 6px; }
+
+    .qr-block .qr-label {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .qr-block .qr-upi {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 700;
+      margin-top: 6px;
+    }
 
     /* Upload section */
-    .upload-section { margin-top: 24px; }
-    .upload-title { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .upload-section {
+      margin-top: 24px;
+    }
+
+    .upload-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
     .upload-drop {
-      border: 2px dashed var(--border); border-radius: 16px; padding: 40px 24px;
-      text-align: center; cursor: pointer; transition: all .3s ease;
-      position: relative; background: rgba(255,255,255,0.02);
+      border: 2px dashed var(--border);
+      border-radius: 16px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .3s ease;
+      position: relative;
+      background: rgba(255, 255, 255, 0.02);
     }
-    .upload-drop:hover, .upload-drop.dragover { border-color: var(--accent); background: rgba(0, 137, 123, 0.05); }
+
+    .upload-drop:hover,
+    .upload-drop.dragover {
+      border-color: var(--accent);
+      background: rgba(0, 137, 123, 0.05);
+    }
+
     .upload-drop input[type=file] {
-      position: absolute; inset: 0; opacity: 0; cursor: pointer;
-      width: 100%; height: 100%; border: none; padding: 0;
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+      border: none;
+      padding: 0;
     }
-    .upload-drop .upload-icon { font-size: 48px; margin-bottom: 12px; }
-    .upload-drop .upload-text { font-size: 16px; color: var(--muted); }
-    .upload-drop .upload-hint { font-size: 12px; color: #44445a; margin-top: 6px; }
-    #upload-preview { margin-top: 16px; display: none; }
-    #upload-preview img { width: 100%; max-height: 250px; object-fit: cover; border-radius: 14px; border: 2px solid var(--green); }
-    #upload-preview .preview-name { font-size: 13px; color: var(--green); margin-top: 8px; font-weight: 600; }
+
+    .upload-drop .upload-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .upload-drop .upload-text {
+      font-size: 16px;
+      color: var(--muted);
+    }
+
+    .upload-drop .upload-hint {
+      font-size: 12px;
+      color: #44445a;
+      margin-top: 6px;
+    }
+
+    #upload-preview {
+      margin-top: 16px;
+      display: none;
+    }
+
+    #upload-preview img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 2px solid var(--green);
+    }
+
+    #upload-preview .preview-name {
+      font-size: 13px;
+      color: var(--green);
+      margin-top: 8px;
+      font-weight: 600;
+    }
 
     /* global error */
     .global-error {
-      background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
-      border-radius: 12px; padding: 16px 20px; font-size: 15px; color: #f87171;
-      margin-top: 16px; display: none; font-weight: 500;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 15px;
+      color: #f87171;
+      margin-top: 16px;
+      display: none;
+      font-weight: 500;
     }
-    .global-error.show { display: block; }
+
+    .global-error.show {
+      display: block;
+    }
 
     /* ─── TICKET ─────────────────────────────────────────────────── */
-    .success-msg { text-align: center; margin-bottom: 32px; }
-    .success-msg .check-icon {
-      width: 80px; height: 80px; background: rgba(245,200,66,0.1); border: 2px solid var(--gold);
-      border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      margin: 0 auto 20px; font-size: 36px;
+    .success-msg {
+      text-align: center;
+      margin-bottom: 32px;
     }
-    .success-msg h2 { font-family: var(--head); font-size: 1.8rem; font-weight: 800; color: var(--gold); }
-    .success-msg p  { color: var(--muted); font-size: 16px; margin-top: 8px; }
-    .ticket-note { text-align: center; font-size: 13px; color: var(--muted); margin-top: 24px; line-height: 1.6; }
-    .ticket-note strong { color: var(--text); }
+
+    .success-msg .check-icon {
+      width: 80px;
+      height: 80px;
+      background: rgba(245, 200, 66, 0.1);
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 36px;
+    }
+
+    .success-msg h2 {
+      font-family: var(--head);
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--gold);
+    }
+
+    .success-msg p {
+      color: var(--muted);
+      font-size: 16px;
+      margin-top: 8px;
+    }
+
+    .ticket-note {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 24px;
+      line-height: 1.6;
+    }
+
+    .ticket-note strong {
+      color: var(--text);
+    }
 
     /* ─── FOOTER ─────────────────────────────────────────────────── */
-    footer { text-align: center; margin-top: 64px; font-size: 11px; color: #3f3f46; letter-spacing: 0.5px; opacity: 0.6; }
-    
-    @media (max-width: 500px) {
-      .page-wrap { padding: 20px 14px 60px; }
-      .card { padding: 32px 20px; border-radius: 20px; }
-      .site-header h1 { font-size: 2.2rem; }
-      .event-badge { font-size: 10px; padding: 5px 14px; }
-      .logo-strip { gap: 12px; margin-bottom: 32px; }
-      .logo-item { font-size: 9px; }
-      .step-lbl { font-size: 10px; letter-spacing: 0.05em; }
-      .step-dot { width: 34px; height: 34px; border-radius: 12px; font-size: 13px; }
-      .step-line { width: 40px; }
-      .form-title { font-size: 1.3rem; margin-bottom: 24px; }
-      input, select { padding: 14px 16px; font-size: 15px; }
-      .amount-badge .amount { font-size: 2.5rem; }
-      .ticket-bottom { flex-direction: column; align-items: center; text-align: center; }
-      .qr-wrap { width: 140px; height: 140px; }
-      .qr-wrap img { width: 120px; height: 120px; }
+    footer {
+      text-align: center;
+      margin-top: 64px;
+      font-size: 11px;
+      color: #3f3f46;
+      letter-spacing: 0.5px;
+      opacity: 0.6;
     }
+
+    @media (max-width: 500px) {
+      .page-wrap {
+        padding: 20px 14px 60px;
+      }
+
+      .card {
+        padding: 32px 20px;
+        border-radius: 20px;
+      }
+
+      .site-header h1 {
+        font-size: 2.2rem;
+      }
+
+      .event-badge {
+        font-size: 10px;
+        padding: 5px 14px;
+      }
+
+      .logo-strip {
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+
+      .logo-item {
+        font-size: 9px;
+      }
+
+      .step-lbl {
+        font-size: 10px;
+        letter-spacing: 0.05em;
+      }
+
+      .step-dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        font-size: 13px;
+      }
+
+      .step-line {
+        width: 40px;
+      }
+
+      .form-title {
+        font-size: 1.3rem;
+        margin-bottom: 24px;
+      }
+
+      input,
+      select {
+        padding: 14px 16px;
+        font-size: 15px;
+      }
+
+      .amount-badge .amount {
+        font-size: 2.5rem;
+      }
+
+      .ticket-bottom {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .qr-wrap {
+        width: 140px;
+        height: 140px;
+      }
+
+      .qr-wrap img {
+        width: 120px;
+        height: 120px;
+      }
+    }
+
     /* Logo Banner Styles */
     .logo-banner-wrap {
       width: 100%;
@@ -335,7 +933,11 @@
       position: relative;
       z-index: 1000;
     }
-    .logo-banner-wrap::after { display: none; }
+
+    .logo-banner-wrap::after {
+      display: none;
+    }
+
     .logo-banner-img {
       max-width: 95%;
       height: auto;
@@ -346,6 +948,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <!-- ═══ HEADER LOGO BANNER ═══ -->
@@ -353,490 +956,475 @@
     <img src="assets/branding_banner.png" alt="DroneXperience Branding" class="logo-banner-img">
   </div>
 
-<div class="page-wrap">
+  <div class="page-wrap">
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="event-badge">✦ Build, Fly & Innovate</div>
-    <h1>Drone<br/><span>Xperience</span></h1>
-    <div class="event-meta">
-      <div class="event-meta-item">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        <span>20th - 21st April 2026</span>
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="event-badge">✦ Build, Fly & Innovate</div>
+      <h1>Drone<br /><span>Xperience</span></h1>
+      <div class="event-meta">
+        <div class="event-meta-item">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+          </svg>
+          <span>20th - 21st April 2026</span>
+        </div>
+        <div class="event-meta-item">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+            <circle cx="12" cy="9" r="2.5" />
+          </svg>
+          <span>TP2 - CLS 711</span>
+        </div>
       </div>
-      <div class="event-meta-item">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-        <span>TP2 - CLS 711</span>
+    </header>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar">
+      <div class="step-dot active" id="dot1">1</div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-dot" id="dot2">2</div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-dot" id="dot3">3</div>
+    </div>
+    <div class="step-labels">
+      <span class="step-lbl active" id="lbl1">Details</span>
+      <span class="step-lbl" id="lbl2">Payment</span>
+      <span class="step-lbl" id="lbl3">Ticket</span>
+    </div>
+
+    <div id="step1" class="step-section active step-details">
+      <div class="card">
+        <p class="form-title"><i class="fas fa-user-edit" style="color:var(--accent); margin-right:8px;"></i> Your
+          Details</p>
+
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="e.g. Arjun Sharma" autocomplete="name" />
+          <div class="field-error" id="name-err">Please enter your full name.</div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
+          <div class="field-error" id="email-err">Please enter a valid email.</div>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel" />
+          <div class="field-error" id="phone-err">Please enter your phone number.</div>
+        </div>
+        <div class="form-group">
+          <label for="org">Organization / College</label>
+          <input type="text" id="org" placeholder="e.g. IIT Madras" />
+          <div class="field-error" id="org-err">Please enter your organization.</div>
+        </div>
+        <div class="form-group">
+          <label for="regno">College Register No.</label>
+          <input type="text" id="regno" placeholder="e.g. RA2211003010101" />
+          <div class="field-error" id="regno-err">Please enter your register number.</div>
+        </div>
+        <div class="form-group">
+          <label for="degree">Degree</label>
+          <input type="text" id="degree" placeholder="e.g. B.Tech" />
+          <div class="field-error" id="degree-err">Please enter your degree.</div>
+        </div>
+        <div class="form-group">
+          <label for="dept">Department</label>
+          <input type="text" id="dept" placeholder="e.g. Computer Science" />
+          <div class="field-error" id="dept-err">Please enter your department.</div>
+        </div>
+        <div class="form-group">
+          <label for="year">Year of Study</label>
+          <select id="year">
+            <option value="" disabled selected>Select your year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+            <option value="Other">Other</option>
+          </select>
+          <div class="field-error" id="year-err">Please select your year of study.</div>
+        </div>
+
+        <button class="btn btn-primary" id="btn-next1" onclick="goToPayment()">
+          <span class="btn-text">Continue to Payment →</span>
+          <span class="spinner"></span>
+        </button>
       </div>
     </div>
-  </header>
 
-  <!-- PROGRESS BAR -->
-  <div class="progress-bar">
-    <div class="step-dot active" id="dot1">1</div>
-    <div class="step-line" id="line1"></div>
-    <div class="step-dot" id="dot2">2</div>
-    <div class="step-line" id="line2"></div>
-    <div class="step-dot" id="dot3">3</div>
-  </div>
-  <div class="step-labels">
-    <span class="step-lbl active" id="lbl1">Details</span>
-    <span class="step-lbl" id="lbl2">Payment</span>
-    <span class="step-lbl" id="lbl3">Ticket</span>
-  </div>
+    <!-- ═══ STEP 2 — PAYMENT ═══ -->
+    <div id="step2" class="step-section step-payment">
+      <div class="card">
+        <p class="form-title"><i class="fas fa-credit-card" style="color:var(--gold); margin-right:8px;"></i> Complete
+          Payment</p>
 
-  <div id="step1" class="step-section active step-details">
-    <div class="card">
-      <p class="form-title"><i class="fas fa-user-edit" style="color:var(--accent); margin-right:8px;"></i> Your Details</p>
+        <!-- Amount -->
+        <div class="amount-badge">
+          <div class="label">Registration Fee</div>
+          <div class="amount">₹600</div>
+          <div class="note">One-time payment — includes all workshop materials</div>
+        </div>
 
-      <div class="form-group">
-        <label for="name">Full Name</label>
-        <input type="text" id="name" placeholder="e.g. Arjun Sharma" autocomplete="name" />
-        <div class="field-error" id="name-err">Please enter your full name.</div>
-      </div>
-      <div class="form-group">
-        <label for="email">Email Address</label>
-        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" />
-        <div class="field-error" id="email-err">Please enter a valid email.</div>
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel" />
-        <div class="field-error" id="phone-err">Please enter your phone number.</div>
-      </div>
-      <div class="form-group">
-        <label for="org">Organization / College</label>
-        <input type="text" id="org" placeholder="e.g. IIT Madras" />
-        <div class="field-error" id="org-err">Please enter your organization.</div>
-      </div>
-      <div class="form-group">
-        <label for="regno">College Register No.</label>
-        <input type="text" id="regno" placeholder="e.g. RA2211003010101" />
-        <div class="field-error" id="regno-err">Please enter your register number.</div>
-      </div>
-      <div class="form-group">
-        <label for="degree">Degree</label>
-        <input type="text" id="degree" placeholder="e.g. B.Tech" />
-        <div class="field-error" id="degree-err">Please enter your degree.</div>
-      </div>
-      <div class="form-group">
-        <label for="dept">Department</label>
-        <input type="text" id="dept" placeholder="e.g. Computer Science" />
-        <div class="field-error" id="dept-err">Please enter your department.</div>
-      </div>
-      <div class="form-group">
-        <label for="year">Year of Study</label>
-        <select id="year">
-          <option value="" disabled selected>Select your year</option>
-          <option value="1">1st Year</option>
-          <option value="2">2nd Year</option>
-          <option value="3">3rd Year</option>
-          <option value="4">4th Year</option>
-          <option value="Other">Other</option>
-        </select>
-        <div class="field-error" id="year-err">Please select your year of study.</div>
-      </div>
+        <!-- Payment note with Ticket ID -->
+        <div class="note-chip" id="note-chip">
+          <span class="key">Your Unique Tag Line (Note):</span>
+          <span class="val" id="ticket-id-display">—</span>
+          <span class="copy-note" onclick="copyNote()" title="Copy tag line"><i class="fas fa-copy"></i> Copy Tag Line</span>
+        </div>
 
-      <button class="btn btn-primary" id="btn-next1" onclick="goToPayment()">
-        <span class="btn-text">Continue to Payment →</span>
-        <span class="spinner"></span>
-      </button>
+        <!-- UPI ID bar -->
+        <div class="upi-bar">
+          <span style="color:var(--muted);font-size:12px;">UPI ID</span>
+          <span class="upi-id" id="upi-id-primary">areojoeshan2005@okaxis</span>
+          <button class="copy-btn" onclick="copyUPI()">Copy</button>
+        </div>
+
+        <!-- Pay method: mobile vs desktop -->
+        <div class="pay-method-wrap">
+          <div class="pay-method-title" id="pay-method-label">Pay using</div>
+
+          <!-- Unified QR Block for both Desktop and Mobile -->
+          <div class="qr-block" id="qr-payment-area">
+            <img id="payment-qr" src="assets/payment_qr.png" alt="UPI Payment QR Code" style="width:220px; height:auto; margin-bottom:10px; cursor:pointer;" onclick="downloadQR()" />
+            <div style="margin-bottom:15px;">
+                <button class="btn-alt" onclick="downloadQR()"><i class="fas fa-download"></i> Save QR as Image</button>
+            </div>
+            <div class="qr-label">Scan or save this QR code to pay</div>
+            <div class="qr-upi" id="qr-upi-text">areojoeshan2005@okaxis</div>
+          </div>
+        </div>
+
+        <p style="text-align:center; font-size:12px; color:#ef4444; font-weight:700; margin-bottom:24px; text-transform:uppercase; letter-spacing:0.5px;">
+            <i class="fas fa-shield-alt"></i> No amount is refundable once verified.
+        </p>
+
+        <!-- Bank Details (Fallback) -->
+        <div class="bank-details-box" id="bank-details">
+          <p
+            style="font-size:12px; font-weight:700; color:var(--gold); margin-bottom:15px; text-transform:uppercase; letter-spacing:1px; text-align:center;">
+            Direct Bank Transfer (IMPS/NEFT)</p>
+          <div class="bank-info-row"><span>Account Holder</span> <span id="bank-name">JOE SHAN NEERAJ</span></div>
+          <div class="bank-info-row"><span>Account Number</span> <span id="bank-acc">XXXXXXXXXXXX</span></div>
+          <div class="bank-info-row"><span>IFSC Code</span> <span id="bank-ifsc">XXXXXXXXXXX</span></div>
+          <div class="bank-info-row"><span>Bank Name</span> <span id="bank-bank">STATE BANK OF INDIA</span></div>
+          <p style="font-size:10px; color:var(--muted); margin-top:15px; text-align:center; line-height:1.4;">Transfer
+            ₹600 and upload the screenshot below. <br /> Use Ticket ID as transfer remark.</p>
+        </div>
+
+        <div class="support-bar">
+          <span class="support-text">Facing issues with payment? </span>
+          <a href="https://wa.me/916380515641?text=Hi,%20I'm%20facing%20issues%20with%20payment%20for%20DroneXperience"
+            target="_blank" class="btn-support"><i class="fab fa-whatsapp"></i> Chat Support</a>
+        </div>
+
+        <!-- Upload payment screenshot -->
+        <div class="upload-section">
+          <div class="upload-title"><i class="fas fa-file-upload" style="margin-right:6px;"></i> Upload Payment
+            Screenshot</div>
+          <div class="upload-drop" id="upload-drop">
+            <input type="file" id="payment-screenshot" accept="image/*" onchange="handleUpload(this)" />
+            <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+            <div class="upload-text">Tap to select your payment screenshot</div>
+            <div class="upload-hint">JPG, PNG, WebP — max 5 MB</div>
+          </div>
+          <div id="upload-preview">
+            <img id="preview-img" src="" alt="Payment proof" />
+            <div class="preview-name" id="preview-name"></div>
+          </div>
+        </div>
+
+        <div class="global-error" id="pay-error"></div>
+
+        <button class="btn btn-success" style="margin-top:20px;" id="btn-submit" onclick="submitRegistration()">
+          <span class="btn-text"><i class="fas fa-check-circle" style="margin-right:8px;"></i> Confirm Payment &amp;
+            Register</span>
+          <span class="spinner"></span>
+        </button>
+        <button class="btn btn-outline" onclick="goToStep(1)">← Back to Details</button>
+      </div>
     </div>
-  </div>
 
-  <!-- ═══ STEP 2 — PAYMENT ═══ -->
-  <div id="step2" class="step-section step-payment">
-    <div class="card">
-      <p class="form-title"><i class="fas fa-credit-card" style="color:var(--gold); margin-right:8px;"></i> Complete Payment</p>
-
-      <!-- Amount -->
-      <div class="amount-badge">
-        <div class="label">Registration Fee</div>
-        <div class="amount">₹600</div>
-        <div class="note">One-time payment — includes all workshop materials</div>
+    <div id="step3" class="step-section step-ticket">
+      <div class="success-msg">
+        <div class="check-icon" style="border-color: var(--gold); background: rgba(245,200,66,0.1); font-size: 28px;"><i
+            class="fas fa-hourglass-half"></i></div>
+        <h2 style="color: var(--gold);">Payment Under Review</h2>
+        <p>We've received your registration and payment proof.</p>
       </div>
 
-      <!-- Payment note with Ticket ID -->
-      <div class="note-chip" id="note-chip">
-        <span class="key">Payment Note / Remark:</span>
-        <span class="val" id="ticket-id-display">—</span>
-        <span class="copy-note" onclick="copyNote()" title="Copy note"><i class="fas fa-copy"></i></span>
-      </div>
+      <div class="card" style="border-style: dashed; background: rgba(255,255,255,0.02);">
+        <p style="font-size: 14px; line-height: 1.6; text-align: center; color: var(--muted);">
+          Our team is currently verifying your payment. Once approved, <strong style="color: var(--text);">your official
+            workshop ticket with the QR code</strong> will be sent to your registered email address.
+        </p>
 
-      <!-- UPI ID bar -->
-      <div class="upi-bar">
-        <span style="color:var(--muted);font-size:12px;">UPI ID</span>
-        <span class="upi-id" id="upi-id-primary">areojoeshan2005@okaxis</span>
-        <button class="copy-btn" onclick="copyUPI()">Copy</button>
-      </div>
-
-      <!-- Pay method: mobile vs desktop -->
-      <div class="pay-method-wrap">
-        <div class="pay-method-title" id="pay-method-label">Pay using</div>
-
-        <!-- Mobile: Simplified UPI button (shown on small screens) -->
-        <div class="upi-btns" id="mobile-pay">
-          <p style="font-size: 11px; color: var(--muted); margin-bottom: 15px; text-align: center; border: 1px dashed var(--border); padding: 10px; border-radius: 10px;">
-            <i class="fas fa-info-circle"></i> Enter <strong>₹600</strong> manually and Note: <strong id="note-reminder">DX-XXX</strong>
-          </p>
-          <a href="#" class="upi-app-btn" id="universal-pay-btn" style="border-width:2px; border-color:var(--accent); background:rgba(0,137,123,0.1);">
-            <span class="app-icon"><i class="fas fa-bolt" style="color:var(--gold);"></i></span>
-            <span class="app-name" style="font-weight:800; letter-spacing:1px;">PAY VIA ANY UPI APP</span>
-            <span class="app-arrow">→</span>
-          </a>
-        </div>
-
-        <!-- Desktop: QR code (shown on large screens) -->
-        <div class="qr-block" id="desktop-pay">
-          <img id="payment-qr" src="" alt="UPI Payment QR Code" />
-          <div class="qr-label">Scan with any UPI app</div>
-          <div class="qr-upi" id="qr-upi-text">areojoeshan2005@okaxis</div>
+        <div
+          style="margin-top: 24px; padding: 16px; background: var(--surface2); border-radius: 12px; border: 1px solid var(--border);">
+          <div
+            style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; text-align: center;">
+            Registration Ref</div>
+          <div
+            style="font-family: var(--head); font-size: 1.8rem; font-weight: 800; text-align: center; color: var(--accent);"
+            id="p-id">DX-XXXX</div>
         </div>
       </div>
 
-      <!-- Alternate ID Switch -->
-      <div class="alternate-wrap">
-        <span class="alternate-text"><i class="fas fa-exclamation-circle"></i> Still getting "Exceeded Bank Limit"? <br/> UPI might be throttled for your account today. </span>
-        <div style="display:flex; gap:10px; justify-content:center; flex-direction:column; align-items:center;">
-          <button class="btn-alt" id="btn-switch-upi" onclick="switchUPI()">TRY ALTERNATE UPI ID</button>
-          <button class="btn-alt" style="border-color:var(--muted); color:var(--muted); background:transparent;" onclick="toggleBankDetails()">SHOW BANK ACCOUNT DETAILS</button>
-        </div>
-      </div>
-
-      <!-- Bank Details (Fallback) -->
-      <div class="bank-details-box" id="bank-details">
-        <p style="font-size:12px; font-weight:700; color:var(--gold); margin-bottom:15px; text-transform:uppercase; letter-spacing:1px; text-align:center;">Direct Bank Transfer (IMPS/NEFT)</p>
-        <div class="bank-info-row"><span>Account Holder</span> <span id="bank-name">JOE SHAN NEERAJ</span></div>
-        <div class="bank-info-row"><span>Account Number</span> <span id="bank-acc">XXXXXXXXXXXX</span></div>
-        <div class="bank-info-row"><span>IFSC Code</span> <span id="bank-ifsc">XXXXXXXXXXX</span></div>
-        <div class="bank-info-row"><span>Bank Name</span> <span id="bank-bank">STATE BANK OF INDIA</span></div>
-        <p style="font-size:10px; color:var(--muted); margin-top:15px; text-align:center; line-height:1.4;">Transfer ₹600 and upload the screenshot below. <br/> Use Ticket ID as transfer remark.</p>
-      </div>
-
-      <div class="support-bar">
-        <span class="support-text">Facing issues with payment? </span>
-        <a href="https://wa.me/916380515641?text=Hi,%20I'm%20facing%20issues%20with%20payment%20for%20DroneXperience" target="_blank" class="btn-support"><i class="fab fa-whatsapp"></i> Chat Support</a>
-      </div>
-
-      <!-- Upload payment screenshot -->
-      <div class="upload-section">
-        <div class="upload-title"><i class="fas fa-file-upload" style="margin-right:6px;"></i> Upload Payment Screenshot</div>
-        <div class="upload-drop" id="upload-drop">
-          <input type="file" id="payment-screenshot" accept="image/*" onchange="handleUpload(this)" />
-          <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
-          <div class="upload-text">Tap to select your payment screenshot</div>
-          <div class="upload-hint">JPG, PNG, WebP — max 5 MB</div>
-        </div>
-        <div id="upload-preview">
-          <img id="preview-img" src="" alt="Payment proof" />
-          <div class="preview-name" id="preview-name"></div>
-        </div>
-      </div>
-
-      <div class="global-error" id="pay-error"></div>
-
-      <button class="btn btn-success" style="margin-top:20px;" id="btn-submit" onclick="submitRegistration()">
-        <span class="btn-text"><i class="fas fa-check-circle" style="margin-right:8px;"></i> Confirm Payment &amp; Register</span>
-        <span class="spinner"></span>
-      </button>
-      <button class="btn btn-outline" onclick="goToStep(1)">← Back to Details</button>
-    </div>
-  </div>
-
-  <div id="step3" class="step-section step-ticket">
-    <div class="success-msg">
-      <div class="check-icon" style="border-color: var(--gold); background: rgba(245,200,66,0.1); font-size: 28px;"><i class="fas fa-hourglass-half"></i></div>
-      <h2 style="color: var(--gold);">Payment Under Review</h2>
-      <p>We've received your registration and payment proof.</p>
-    </div>
-    
-    <div class="card" style="border-style: dashed; background: rgba(255,255,255,0.02);">
-      <p style="font-size: 14px; line-height: 1.6; text-align: center; color: var(--muted);">
-        Our team is currently verifying your payment. Once approved, <strong style="color: var(--text);">your official workshop ticket with the QR code</strong> will be sent to your registered email address.
+      <p class="ticket-note">
+        This process usually takes <strong>1–2 hours</strong>.<br />
+        Please keep an eye on your inbox (and spam folder).
       </p>
-      
-      <div style="margin-top: 24px; padding: 16px; background: var(--surface2); border-radius: 12px; border: 1px solid var(--border);">
-        <div style="font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; text-align: center;">Registration Ref</div>
-        <div style="font-family: var(--head); font-size: 1.8rem; font-weight: 800; text-align: center; color: var(--accent);" id="p-id">DX-XXXX</div>
-      </div>
     </div>
 
-    <p class="ticket-note">
-      This process usually takes <strong>1–2 hours</strong>.<br/>
-      Please keep an eye on your inbox (and spam folder).
-    </p>
+    <footer>Powered by Google Sheets &amp; Apps Script &nbsp;·&nbsp; DroneXperience 2026</footer>
   </div>
 
-  <footer>Powered by Google Sheets &amp; Apps Script &nbsp;·&nbsp; DroneXperience 2026</footer>
-</div>
+  <script>
+    /* ═══════════════════════════════════════════════════════
+       CONFIGURATION
+    ═══════════════════════════════════════════════════════ */
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9eOCnmvuQv0uI-vDu4OlDtTjT6EIROBfmFTiH3tuBcF4gpjMqBhar2kJHBd9xqISm3Q/exec';
 
-<script>
-/* ═══════════════════════════════════════════════════════
-   CONFIGURATION
-═══════════════════════════════════════════════════════ */
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw9eOCnmvuQv0uI-vDu4OlDtTjT6EIROBfmFTiH3tuBcF4gpjMqBhar2kJHBd9xqISm3Q/exec';
+    // Multi-Bank Setup (Simplified to approved ID)
+    const UPI_ACCOUNTS = [
+      { id: 'areojoeshan2005@okaxis', name: 'Joe Shan Neeraj', bank: 'Axis' }
+    ];
 
-// Multi-Bank Setup to bypass platform limits
-const UPI_ACCOUNTS = [
-  { id: 'areojoeshan2005@okaxis',      name: 'Joe Shan Neeraj',      bank: 'Axis' },
-  { id: 'rithish.karthikeyan@okicici', name: 'Rithish K',            bank: 'ICICI' },
-  { id: 'areojoeshan2005@oksbi',       name: 'Joe Shan Neeraj',      bank: 'SBI' }
-];
+    let currentUpiIdx = 0; // Start with fresh Axis ID
+    const AMOUNT = '600';
+    const EVENT_NAME = 'DroneXperience Workshop';
+    const EVENT_DATE = '20th - 21st April 2026';
+    const EVENT_VENUE = 'TP2 - CLS 711';
 
-let currentUpiIdx = 0; // Start with fresh Axis ID
-const AMOUNT          = '600';
-const EVENT_NAME      = 'DroneXperience Workshop';
-const EVENT_DATE      = '20th - 21st April 2026';
-const EVENT_VENUE     = 'TP2 - CLS 711';
+    /* ═══════════════════════════════════════════════════════
+       STATE
+    ═══════════════════════════════════════════════════════ */
+    let tempTicketId = '';   // provisional ID generated client-side
+    let screenshotB64 = '';   // base64 of payment screenshot
+    let isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
-/* ═══════════════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════════════ */
-let tempTicketId  = '';   // provisional ID generated client-side
-let screenshotB64 = '';   // base64 of payment screenshot
-let isMobile      = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
-
-/* ═══════════════════════════════════════════════════════
-   PROGRESS BAR
-═══════════════════════════════════════════════════════ */
-function updateProgress(step) {
-  for (let i = 1; i <= 3; i++) {
-    const dot = document.getElementById('dot' + i);
-    const lbl = document.getElementById('lbl' + i);
-    dot.className = 'step-dot' + (i < step ? ' done' : i === step ? ' active' : '');
-    lbl.className = 'step-lbl'  + (i < step ? ' done' : i === step ? ' active' : '');
-    if (i < step) dot.textContent = '✓';
-    else dot.textContent = i;
-  }
-  for (let i = 1; i <= 2; i++) {
-    document.getElementById('line' + i).className = 'step-line' + (i < step ? ' done' : '');
-  }
-}
-
-function goToStep(n) {
-  document.querySelectorAll('.step-section').forEach(s => s.classList.remove('active'));
-  document.getElementById('step' + n).classList.add('active');
-  updateProgress(n);
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-/* ═══════════════════════════════════════════════════════
-   STEP 1 → STEP 2: VALIDATION + PAYMENT SETUP
-═══════════════════════════════════════════════════════ */
-function validate() {
-  let ok = true;
-  function check(id, errId, fn) {
-    const el = document.getElementById(id);
-    const err = document.getElementById(errId);
-    if (!fn(el.value.trim())) {
-      el.classList.add('error'); err.style.display = 'block'; ok = false;
-    } else {
-      el.classList.remove('error'); err.style.display = 'none';
+    /* ═══════════════════════════════════════════════════════
+       PROGRESS BAR
+    ═══════════════════════════════════════════════════════ */
+    function updateProgress(step) {
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById('dot' + i);
+        const lbl = document.getElementById('lbl' + i);
+        dot.className = 'step-dot' + (i < step ? ' done' : i === step ? ' active' : '');
+        lbl.className = 'step-lbl' + (i < step ? ' done' : i === step ? ' active' : '');
+        if (i < step) dot.textContent = '✓';
+        else dot.textContent = i;
+      }
+      for (let i = 1; i <= 2; i++) {
+        document.getElementById('line' + i).className = 'step-line' + (i < step ? ' done' : '');
+      }
     }
-  }
-  check('name',  'name-err',  v => v.length > 1);
-  check('email', 'email-err', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
-  check('phone', 'phone-err', v => v.replace(/\D/g,'').length >= 7);
-  check('org',   'org-err',   v => v.length > 1);
-  check('regno', 'regno-err', v => v.length > 1);
-  check('degree','degree-err',v => v.length > 1);
-  check('dept',  'dept-err',  v => v.length > 1);
-  check('year',  'year-err',  v => v !== '');
-  return ok;
-}
 
-// Generate a provisional ticket ID before server confirms (based on timestamp)
-function genProvisionalId() {
-  const ts = Date.now().toString(36).toUpperCase().slice(-4);
-  return 'DX-' + ts;
-}
+    function goToStep(n) {
+      document.querySelectorAll('.step-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('step' + n).classList.add('active');
+      updateProgress(n);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-function goToPayment() {
-  if (!validate()) return;
+    /* ═══════════════════════════════════════════════════════
+       STEP 1 → STEP 2: VALIDATION + PAYMENT SETUP
+    ═══════════════════════════════════════════════════════ */
+    function validate() {
+      let ok = true;
+      function check(id, errId, fn) {
+        const el = document.getElementById(id);
+        const err = document.getElementById(errId);
+        if (!fn(el.value.trim())) {
+          el.classList.add('error'); err.style.display = 'block'; ok = false;
+        } else {
+          el.classList.remove('error'); err.style.display = 'none';
+        }
+      }
+      check('name', 'name-err', v => v.length > 1);
+      check('email', 'email-err', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+      check('phone', 'phone-err', v => v.replace(/\D/g, '').length >= 7);
+      check('org', 'org-err', v => v.length > 1);
+      check('regno', 'regno-err', v => v.length > 1);
+      check('degree', 'degree-err', v => v.length > 1);
+      check('dept', 'dept-err', v => v.length > 1);
+      check('year', 'year-err', v => v !== '');
+      return ok;
+    }
 
-  // Generate provisional ticket ID for payment reference
-  tempTicketId = genProvisionalId();
-  document.getElementById('ticket-id-display').textContent = tempTicketId;
-  
-  updatePaymentDisplay();
+    // Generate a provisional ticket ID before server confirms (based on timestamp)
+    function genProvisionalId() {
+      const ts = Date.now().toString(36).toUpperCase().slice(-4);
+      return 'DX-' + ts;
+    }
 
-  goToStep(2);
-}
+    function goToPayment() {
+      if (!validate()) return;
 
-function updatePaymentDisplay() {
-  const acc = UPI_ACCOUNTS[currentUpiIdx];
-  
-  // Update text elements
-  document.getElementById('upi-id-primary').textContent = acc.id;
-  document.getElementById('qr-upi-text').textContent    = acc.id;
-  document.getElementById('note-reminder').textContent  = tempTicketId;
+      // Generate provisional ticket ID for payment reference
+      tempTicketId = genProvisionalId();
+      document.getElementById('ticket-id-display').textContent = tempTicketId;
 
-  // Build UPI deep-link (Removed 'am' to bypass bank 'amount-limit' on intent flow)
-  const upiParams = new URLSearchParams({
-    pa: acc.id, pn: acc.name,
-    cu: 'INR',
-    tn: tempTicketId
-  });
-  const upiLink = 'upi://pay?' + upiParams.toString();
-  
-  // Generate QR (for desktop)
-  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' +
-    encodeURIComponent(upiLink) + '&color=000000&bgcolor=ffffff';
-  document.getElementById('payment-qr').src = qrUrl;
+      updatePaymentDisplay();
 
-  // Set UPI app deep link (Using universal upi://pay for maximum bank compatibility)
-  document.getElementById('universal-pay-btn').href = upiLink;
+      goToStep(2);
+    }
 
-  // Device detection: show correct UI
-  if (isMobile) {
-    document.getElementById('mobile-pay').style.display  = 'flex';
-    document.getElementById('desktop-pay').style.display = 'none';
-    document.getElementById('pay-method-label').textContent = '👇 Tap to open your UPI app';
-  } else {
-    document.getElementById('mobile-pay').style.display  = 'none';
-    document.getElementById('desktop-pay').style.display = 'block';
-    document.getElementById('pay-method-label').textContent = '📱 Scan QR to pay';
-  }
-}
+    function updatePaymentDisplay() {
+      const acc = UPI_ACCOUNTS[currentUpiIdx];
 
-function switchUPI() {
-  currentUpiIdx = (currentUpiIdx + 1) % UPI_ACCOUNTS.length;
-  updatePaymentDisplay();
-  
-  const acc = UPI_ACCOUNTS[currentUpiIdx];
-  const btn = document.getElementById('btn-switch-upi');
-  btn.innerHTML = `<i class="fas fa-sync"></i> SWITCHED TO ${acc.bank.toUpperCase()}`;
-  btn.style.borderColor = 'var(--green)';
-  btn.style.color = 'var(--green)';
-  
-  setTimeout(() => {
-    btn.innerHTML = `TRY ALTERNATE (${UPI_ACCOUNTS[(currentUpiIdx + 1) % UPI_ACCOUNTS.length].bank})`;
-    btn.style.borderColor = '';
-    btn.style.color = '';
-  }, 2000);
-}
+      // Update text elements
+      document.getElementById('upi-id-primary').textContent = acc.id;
+      document.getElementById('qr-upi-text').textContent = acc.id;
+      document.getElementById('note-reminder').textContent = tempTicketId;
 
-function toggleBankDetails() {
-  const box = document.getElementById('bank-details');
-  box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-  if (box.style.display === 'block') box.scrollIntoView({ behavior: 'smooth' });
-}
+      // Build UPI deep-link (Removed 'am' to bypass bank 'amount-limit' on intent flow)
+      const upiParams = new URLSearchParams({
+        pa: acc.id, pn: acc.name,
+        cu: 'INR',
+        tn: tempTicketId
+      });
+      const upiLink = 'upi://pay?' + upiParams.toString();
 
-/* ═══════════════════════════════════════════════════════
-   UPLOAD HANDLER
-═══════════════════════════════════════════════════════ */
-function handleUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > 5 * 1024 * 1024) {
-    alert('File is too large. Max size is 5 MB.'); input.value = ''; return;
-  }
-  const reader = new FileReader();
-  reader.onload = e => {
-    screenshotB64 = e.target.result;
-    document.getElementById('preview-img').src = screenshotB64;
-    document.getElementById('preview-name').innerHTML = '<i class="fas fa-check-circle"></i> ' + file.name;
-    document.getElementById('upload-preview').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-}
+      // Always show QR code and label
+      document.getElementById('qr-payment-area').style.display = 'block';
+      document.getElementById('pay-method-label').textContent = '📱 Scan or Save QR to Pay';
+    }
 
-// Drag & drop
-const drop = document.getElementById('upload-drop');
-drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
-drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
-drop.addEventListener('drop', e => {
-  e.preventDefault(); drop.classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file) { document.getElementById('payment-screenshot').files = e.dataTransfer.files; handleUpload(document.getElementById('payment-screenshot')); }
-});
+    function toggleBankDetails() {
+      const box = document.getElementById('bank-details');
+      box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+      if (box.style.display === 'block') box.scrollIntoView({ behavior: 'smooth' });
+    }
 
-/* ═══════════════════════════════════════════════════════
-   COPY HELPERS
-═══════════════════════════════════════════════════════ */
-function copyUPI() {
-  const upiId = UPI_ACCOUNTS[currentUpiIdx].id;
-  navigator.clipboard.writeText(upiId).then(() => {
-    const btn = document.querySelector('.copy-btn');
-    btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; btn.style.color = 'var(--green)';
-    setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
-  });
-}
-function copyNote() {
-  navigator.clipboard.writeText(tempTicketId).then(() => {
-    const el = document.querySelector('.copy-note');
-    el.innerHTML = '<i class="fas fa-check" style="color:var(--green);"></i>'; setTimeout(() => el.innerHTML = '<i class="fas fa-copy"></i>', 1500);
-  });
-}
+    /* ═══════════════════════════════════════════════════════
+       UPLOAD HANDLER
+    ═══════════════════════════════════════════════════════ */
+    function handleUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File is too large. Max size is 5 MB.'); input.value = ''; return;
+      }
+      const reader = new FileReader();
+      reader.onload = e => {
+        screenshotB64 = e.target.result;
+        document.getElementById('preview-img').src = screenshotB64;
+        document.getElementById('preview-name').innerHTML = '<i class="fas fa-check-circle"></i> ' + file.name;
+        document.getElementById('upload-preview').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
 
-/* ═══════════════════════════════════════════════════════
-   STEP 2 → SUBMIT
-═══════════════════════════════════════════════════════ */
-async function submitRegistration() {
-  const errEl = document.getElementById('pay-error');
-  errEl.classList.remove('show');
-
-  if (!screenshotB64) {
-    errEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please upload your payment screenshot before submitting.';
-    errEl.classList.add('show');
-    return;
-  }
-
-  const btn = document.getElementById('btn-submit');
-  btn.classList.add('loading'); btn.disabled = true;
-
-  const payload = {
-    action:      'register',
-    name:        document.getElementById('name').value.trim(),
-    email:       document.getElementById('email').value.trim(),
-    phone:       document.getElementById('phone').value.trim(),
-    org:         document.getElementById('org').value.trim(),
-    regno:       document.getElementById('regno').value.trim(),
-    degree:      document.getElementById('degree').value.trim(),
-    dept:        document.getElementById('dept').value.trim(),
-    year:        document.getElementById('year').value,
-    eventName:   EVENT_NAME,
-    eventDate:   EVENT_DATE,
-    eventVenue:  EVENT_VENUE,
-    paymentRef:  tempTicketId,
-    screenshot:  screenshotB64   // base64 image
-  };
-
-  try {
-    const res  = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
+    // Drag & drop
+    const drop = document.getElementById('upload-drop');
+    drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('dragover'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('dragover'));
+    drop.addEventListener('drop', e => {
+      e.preventDefault(); drop.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) { document.getElementById('payment-screenshot').files = e.dataTransfer.files; handleUpload(document.getElementById('payment-screenshot')); }
     });
-    const data = await res.json();
 
-    if (!data.success) throw new Error(data.message || 'Registration failed.');
+    /* ═══════════════════════════════════════════════════════
+       COPY HELPERS
+    ═══════════════════════════════════════════════════════ */
+    function copyUPI() {
+      const upiId = UPI_ACCOUNTS[currentUpiIdx].id;
+      navigator.clipboard.writeText(upiId).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!'; btn.style.color = 'var(--green)';
+        setTimeout(() => { btn.textContent = 'Copy'; btn.style.color = ''; }, 2000);
+      });
+    }
+    function copyNote() {
+      navigator.clipboard.writeText(tempTicketId).then(() => {
+        const el = document.querySelector('.copy-note');
+        const original = el.innerHTML;
+        el.innerHTML = '<i class="fas fa-check" style="color:var(--green);"></i> Tag Line Copied!'; 
+        setTimeout(() => el.innerHTML = original, 2000);
+      });
+    }
 
-    showPending(data.ticketId || tempTicketId);
-  } catch (err) {
-    errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (err.message || 'Something went wrong. Please try again.');
-    errEl.classList.add('show');
-    btn.classList.remove('loading'); btn.disabled = false;
-  }
-}
+    function downloadQR() {
+      const link = document.createElement('a');
+      link.href = 'assets/payment_qr.png';
+      link.download = 'DroneXperience_Payment_QR.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
-/* ═══════════════════════════════════════════════════════
-   SHOW PENDING SCREEN
-═══════════════════════════════════════════════════════ */
-function showPending(ticketId) {
-  document.getElementById('p-id').textContent = ticketId;
-  goToStep(3);
-}
+    /* ═══════════════════════════════════════════════════════
+       STEP 2 → SUBMIT
+    ═══════════════════════════════════════════════════════ */
+    async function submitRegistration() {
+      const errEl = document.getElementById('pay-error');
+      errEl.classList.remove('show');
 
-/* ═══════════════════════════════════════════════════════
-   AUTO-SAVE (step 1 only)
-═══════════════════════════════════════════════════════ */
-['name','email','phone','org','regno','degree','dept','year'].forEach(id => {
-  const el = document.getElementById(id);
-  const saved = localStorage.getItem('dx_' + id);
-  if (saved) el.value = saved;
-  el.addEventListener('input', () => localStorage.setItem('dx_' + id, el.value));
-});
-</script>
+      if (!screenshotB64) {
+        errEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please upload your payment screenshot before submitting.';
+        errEl.classList.add('show');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit');
+      btn.classList.add('loading'); btn.disabled = true;
+
+      const payload = {
+        action: 'register',
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        org: document.getElementById('org').value.trim(),
+        regno: document.getElementById('regno').value.trim(),
+        degree: document.getElementById('degree').value.trim(),
+        dept: document.getElementById('dept').value.trim(),
+        year: document.getElementById('year').value,
+        eventName: EVENT_NAME,
+        eventDate: EVENT_DATE,
+        eventVenue: EVENT_VENUE,
+        paymentRef: tempTicketId,
+        screenshot: screenshotB64   // base64 image
+      };
+
+      try {
+        const res = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message || 'Registration failed.');
+
+        showPending(data.ticketId || tempTicketId);
+      } catch (err) {
+        errEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (err.message || 'Something went wrong. Please try again.');
+        errEl.classList.add('show');
+        btn.classList.remove('loading'); btn.disabled = false;
+      }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       SHOW PENDING SCREEN
+    ═══════════════════════════════════════════════════════ */
+    function showPending(ticketId) {
+      document.getElementById('p-id').textContent = ticketId;
+      goToStep(3);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       AUTO-SAVE (step 1 only)
+    ═══════════════════════════════════════════════════════ */
+    ['name', 'email', 'phone', 'org', 'regno', 'degree', 'dept', 'year'].forEach(id => {
+      const el = document.getElementById(id);
+      const saved = localStorage.getItem('dx_' + id);
+      if (saved) el.value = saved;
+      el.addEventListener('input', () => localStorage.setItem('dx_' + id, el.value));
+    });
+  </script>
 </body>
+
 </html>
