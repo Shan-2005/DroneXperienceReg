@@ -1202,7 +1202,6 @@
     ═══════════════════════════════════════════════════════ */
     let tempTicketId = '';   // provisional ID generated client-side
     let screenshotB64 = '';   // base64 of payment screenshot
-    let isMobile = /Android|iPhone|iPad|iPod|Windows Phone/i.test(navigator.userAgent);
 
     /* ═══════════════════════════════════════════════════════
        PROGRESS BAR
@@ -1277,7 +1276,6 @@
       // Update text elements
       document.getElementById('upi-id-primary').textContent = acc.id;
       document.getElementById('qr-upi-text').textContent = acc.id;
-      document.getElementById('note-reminder').textContent = tempTicketId;
 
       // Build UPI deep-link (Removed 'am' to bypass bank 'amount-limit' on intent flow)
       const upiParams = new URLSearchParams({
