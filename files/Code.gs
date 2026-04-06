@@ -364,3 +364,47 @@ function getAdminDashboardData(sheet, user, pass) {
   }
   return res({ success: true, stats, members: members.reverse() });
 }
+
+// ─── SPREADSHEET TRIGGER (onEdit) ──────────────────────────────
+/**
+ * Automatically send email when status is changed to "Approved" in the sheet.
+ * To use this, you must set up an "On Edit" installable trigger for this function.
+ */
+function handleApproval(e) {
+  if (!e || !e.range) return;
+  
+  const sheet = e.source.getActiveSheet();
+  if (sheet.getName() !== SHEET_NAME) return;
+
+  const range = e.range;
+  const col   = range.getColumn();
+  const row   = range.getRow();
+
+  if (row < 2) return; // Skip headers
+
+  const COL = getColMap(sheet);
+  if (col !== COL.STATUS + 1) return; // Only process Status column edits
+
+  const newVal = String(e.value || '').trim();
+  const oldVal = String(e.oldValue || '').trim();
+
+  // If status is changed to Approved (fuzzy match)
+  if (norm(newVal) === norm(APPROVED_STATUS) && norm(oldVal) !== norm(APPROVED_STATUS)) {
+    const dataRow = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const email    = String(dataRow[COL.EMAIL] || '').trim();
+    const name     = String(dataRow[COL.NAME] || '').trim();
+    const ticketId = String(dataRow[COL.TICKET_ID] || '').trim();
+
+    if (!email || !email.includes('@')) return;
+
+    try {
+      sendTicketEmail(email, name, ticketId, EVENT_NAME, EVENT_DATE, EVENT_VENUE);
+      // Success note in execution log
+      console.log('Trigger: Email successfully sent to ' + email);
+    } catch (err) {
+      // Revert status to show error
+      sheet.getRange(row, COL.STATUS + 1).setValue('Email Error');
+      console.error('Trigger Error: ' + err.message);
+    }
+  }
+}
