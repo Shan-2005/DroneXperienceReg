@@ -1033,6 +1033,95 @@
       box-shadow: 0 10px 50px rgba(0, 137, 123, 0.3);
       display: inline-block;
     }
+
+    /* Status Check Link in Header */
+    .status-check-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        padding: 8px 16px;
+        border-radius: 100px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        margin-top: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .status-check-link:hover {
+        background: rgba(245, 200, 66, 0.1);
+        border-color: var(--gold);
+        color: var(--gold);
+    }
+
+    /* Copy Button in Step 3 */
+    .p-id-wrap {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .copy-p-id {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: all 0.2s;
+    }
+
+    .copy-p-id:hover {
+        background: rgba(16, 185, 129, 0.2);
+    }
+
+    /* Status Modal specific styles */
+    .status-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .status-result {
+        margin-top: 24px;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        display: none;
+        text-align: center;
+    }
+
+    .status-result.show {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 100px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-top: 8px;
+    }
+
+    .status-badge.pending { background: rgba(245, 200, 66, 0.1); color: var(--gold); }
+    .status-badge.approved { background: rgba(16, 185, 129, 0.1); color: var(--green); }
+    .status-badge.checked-in { background: rgba(0, 137, 123, 0.1); color: var(--accent); }
+
     /* Modal Overlay & Card */
     .modal-overlay {
       position: fixed;
@@ -1245,6 +1334,33 @@
     </div>
   </div>
 
+  <!-- Registration Status Modal -->
+  <div class="modal-overlay" id="status-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <i class="fas fa-id-card-alt" style="font-size: 40px;"></i>
+        Check Registration Status
+      </div>
+      <div class="status-form">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label>Enter Ticket ID / Registration ID</label>
+          <input type="text" id="status-ticket-id" placeholder="e.g. DX-0042" style="text-align: center; font-family: monospace; letter-spacing: 1px;" />
+        </div>
+        <button class="modal-btn" id="btn-status-check" onclick="performStatusCheck()">Check Now</button>
+        <button class="btn btn-outline" style="width: 100%; border: none; margin-top: -8px;" onclick="closeStatusModal()">Close</button>
+      </div>
+
+      <div id="status-result" class="status-result">
+        <div id="status-wait" style="display:none;"><span class="spinner" style="display:inline-block; border-color:var(--gold) transparent var(--gold) transparent;"></span></div>
+        <div id="status-content">
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 4px;" id="st-name"></p>
+          <div id="st-badge" class="status-badge"></div>
+          <p style="font-size: 11px; color: var(--muted); margin-top: 12px;" id="st-msg"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="page-wrap">
 
     <!-- HEADER -->
@@ -1266,6 +1382,9 @@
           </svg>
           <span>TP2 - CLS 711</span>
         </div>
+      </div>
+      <div class="status-check-link" onclick="openStatusModal()">
+        <i class="fas fa-search"></i> Already registered? Check Status
       </div>
     </header>
 
@@ -1459,6 +1578,9 @@
           <div
             style="font-family: var(--head); font-size: 1.8rem; font-weight: 800; text-align: center; color: var(--accent);"
             id="p-id">DX-XXXX</div>
+          <button class="copy-p-id" id="btn-copy-pid" onclick="copyTicketId(true)">
+            <i class="fas fa-copy"></i> Copy Registration ID
+          </button>
         </div>
       </div>
 
@@ -1577,6 +1699,96 @@
         btn.style.opacity = '0.5';
         btn.style.cursor = 'not-allowed';
       }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       STATUS CHECK MODAL LOGIC
+    ═══════════════════════════════════════════════════════ */
+    function openStatusModal() {
+      const modal = document.getElementById('status-modal');
+      const input = document.getElementById('status-ticket-id');
+      const savedId = localStorage.getItem('dx_ticket_id');
+      
+      if (savedId) input.value = savedId;
+      
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      document.getElementById('status-result').classList.remove('show');
+    }
+
+    function closeStatusModal() {
+      document.getElementById('status-modal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    async function performStatusCheck() {
+      const ticketId = document.getElementById('status-ticket-id').value.trim().toUpperCase();
+      if (!ticketId) return;
+
+      const btn = document.getElementById('btn-status-check');
+      const resDiv = document.getElementById('status-result');
+      const wait = document.getElementById('status-wait');
+      const content = document.getElementById('status-content');
+      const stName = document.getElementById('st-name');
+      const stBadge = document.getElementById('st-badge');
+      const stMsg = document.getElementById('st-msg');
+
+      btn.disabled = true;
+      resDiv.classList.add('show');
+      wait.style.display = 'block';
+      content.style.display = 'none';
+
+      try {
+        const url = `${APPS_SCRIPT_URL}?action=checkStatus&ticketId=${encodeURIComponent(ticketId)}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        wait.style.display = 'none';
+        content.style.display = 'block';
+
+        if (data.success && data.found) {
+          stName.textContent = `Hello, ${data.name}`;
+          stBadge.textContent = data.status;
+          stBadge.className = 'status-badge ' + data.status.toLowerCase().replace(' ', '-');
+          
+          if (data.status === 'PendingApproval') {
+            stMsg.innerHTML = '<i class="fas fa-clock"></i> We are verifying your payment. Check back in 1-2 hours.';
+          } else if (data.status === 'Approved') {
+            stMsg.innerHTML = '<i class="fas fa-check-circle"></i> Your ticket has been sent to your email!';
+          } else if (data.status === 'Checked-In') {
+            stMsg.innerHTML = '<i class="fas fa-id-badge"></i> You have already checked in to the workshop!';
+          } else {
+            stMsg.innerHTML = 'Status: ' + data.status;
+          }
+          // Save valid ID
+          localStorage.setItem('dx_ticket_id', ticketId);
+        } else {
+          stName.textContent = 'Not Found';
+          stBadge.textContent = 'Unknown ID';
+          stBadge.className = 'status-badge';
+          stMsg.textContent = data.message || 'We couldn\'t find any registration with that ID.';
+        }
+      } catch (err) {
+        wait.style.display = 'none';
+        content.style.display = 'block';
+        stName.textContent = 'Error';
+        stBadge.textContent = 'Connection Issue';
+        stMsg.textContent = 'Could not reach the server. Please try again later.';
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    function copyTicketId(isSuccessStep = false) {
+      const id = isSuccessStep ? document.getElementById('p-id').textContent : ''; 
+      if (!id) return;
+
+      navigator.clipboard.writeText(id).then(() => {
+        const btn = document.getElementById('btn-copy-pid');
+        const original = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => btn.innerHTML = original, 2000);
+      });
     }
 
     function confirmModal() {
@@ -1750,6 +1962,7 @@
     ═══════════════════════════════════════════════════════ */
     function showPending(ticketId) {
       document.getElementById('p-id').textContent = ticketId;
+      localStorage.setItem('dx_ticket_id', ticketId); // Persist for status check
       goToStep(3);
     }
 

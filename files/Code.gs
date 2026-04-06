@@ -77,6 +77,7 @@ function doGet(e) {
     if (action === 'getAdminData') return getAdminDashboardData(sheet, e.parameter.user, e.parameter.pass);
     if (action === 'checkin') return handleCheckin(sheet, e.parameter); 
     if (action === 'approve') return approveParticipant(sheet, e.parameter);
+    if (action === 'checkStatus') return handleCheckStatus(sheet, e.parameter);
 
     const ticketId = (e.parameter.ticketId || '').trim().toUpperCase();
     if (!ticketId) return res({ found: false, error: 'No ticketId' });
@@ -172,6 +173,28 @@ function approveParticipant(sheet, body) {
     }
   }
   return res({ success: false, message: 'Ticket not found' });
+}
+
+// ─── CHECK STATUS ───────────────────────────────────────────────
+function handleCheckStatus(sheet, params) {
+  const ticketId = (params.ticketId || '').trim().toUpperCase();
+  if (!ticketId) return res({ success: false, message: 'Missing Ticket ID' });
+
+  const data = sheet.getDataRange().getValues();
+  const COL  = getColMap(sheet);
+
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    if (String(row[COL.TICKET_ID] || '').trim().toUpperCase() === ticketId) {
+      return res({ 
+        success: true, 
+        name: row[COL.NAME],
+        status: row[COL.STATUS],
+        found: true 
+      });
+    }
+  }
+  return res({ success: true, found: false, message: 'Ticket ID not found' });
 }
 
 // ─── GET PENDING LIST ───────────────────────────────────────────
