@@ -1106,7 +1106,16 @@
 
     .status-result.show {
         display: block;
-        animation: fadeIn 0.3s ease;
+        animation: modalFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .st-icon-anim {
+        animation: iconScale 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes iconScale {
+        from { transform: scale(0.5); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
     }
 
     .status-badge {
@@ -1346,7 +1355,7 @@
         <i class="fas fa-id-card-alt" style="font-size: 40px;"></i>
         Check Registration Status
       </div>
-      <div class="status-form">
+      <div class="status-form" id="status-input-view">
         <div class="form-group" style="margin-bottom: 0;">
           <label>Enter Ticket ID / Registration ID</label>
           <input type="text" id="status-ticket-id" placeholder="e.g. DX-0042" style="text-align: center; font-family: monospace; letter-spacing: 1px;" />
@@ -1356,11 +1365,14 @@
       </div>
 
       <div id="status-result" class="status-result">
-        <div id="status-wait" style="display:none;"><span class="spinner" style="display:inline-block; border-color:var(--gold) transparent var(--gold) transparent;"></span></div>
+        <div id="status-wait" style="display:none; padding: 40px 0;"><span class="spinner" style="width: 40px; height: 40px; display:inline-block; border-color:var(--gold) transparent var(--gold) transparent;"></span></div>
         <div id="status-content">
-          <p style="font-size: 13px; color: var(--muted); margin-bottom: 4px;" id="st-name"></p>
+          <div id="st-icon" style="font-size: 50px; margin-bottom: 20px;"></div>
+          <p style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px;" id="st-name"></p>
           <div id="st-badge" class="status-badge"></div>
-          <p style="font-size: 11px; color: var(--muted); margin-top: 12px;" id="st-msg"></p>
+          <p style="font-size: 13px; color: var(--muted); margin-top: 15px; line-height: 1.5;" id="st-msg"></p>
+          
+          <button class="btn btn-outline" style="width: 100%; margin-top: 25px;" onclick="resetStatusCheck()">Check Another ID</button>
         </div>
       </div>
     </div>
@@ -1716,9 +1728,15 @@
       
       if (savedId) input.value = savedId;
       
+      resetStatusCheck(); // Ensure we start fresh
       modal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
+    }
+
+    function resetStatusCheck() {
+      document.getElementById('status-input-view').style.display = 'block';
       document.getElementById('status-result').classList.remove('show');
+      document.getElementById('status-ticket-id').value = localStorage.getItem('dx_ticket_id') || '';
     }
 
     function closeStatusModal() {
@@ -1731,14 +1749,18 @@
       if (!ticketId) return;
 
       const btn = document.getElementById('btn-status-check');
+      const inputView = document.getElementById('status-input-view');
       const resDiv = document.getElementById('status-result');
       const wait = document.getElementById('status-wait');
       const content = document.getElementById('status-content');
+      
+      const stIcon = document.getElementById('st-icon');
       const stName = document.getElementById('st-name');
       const stBadge = document.getElementById('st-badge');
       const stMsg = document.getElementById('st-msg');
 
       btn.disabled = true;
+      inputView.style.display = 'none'; // Hide input part
       resDiv.classList.add('show');
       wait.style.display = 'block';
       content.style.display = 'none';
@@ -1754,34 +1776,35 @@
         if (data.success && data.found) {
           stName.textContent = `Hello, ${data.name}`;
           
-          // Format status for display (e.g., PendingApproval -> Pending Approval)
           const displayStatus = data.status.replace(/([A-Z])/g, ' $1').trim();
           stBadge.textContent = displayStatus;
           stBadge.className = 'status-badge ' + data.status.toLowerCase().replace(' ', '-');
           
           if (data.status === 'PendingApproval') {
-            stMsg.innerHTML = '<i class="fas fa-clock" style="margin-right:6px;"></i> We are verifying your payment. Check back in 1-2 hours.';
+            stIcon.innerHTML = '<i class="fas fa-history st-icon-anim" style="color: var(--gold);"></i>';
+            stMsg.innerHTML = 'We are verifying your payment details against our records. This usually takes <strong>1-2 hours</strong>. Check back soon!';
           } else if (data.status === 'Approved') {
-            stMsg.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px;"></i> Your ticket has been sent to your email!';
+            stIcon.innerHTML = '<i class="fas fa-check-circle st-icon-anim" style="color: var(--green);"></i>';
+            stMsg.innerHTML = 'Payment verified! Your official entry pass has been generated and sent to your email. See you at the workshop!';
           } else if (data.status === 'Checked-In') {
-            stMsg.innerHTML = '<i class="fas fa-id-badge" style="margin-right:6px;"></i> You have already checked in to the workshop!';
-          } else {
-            stMsg.innerHTML = 'Status: ' + displayStatus;
+            stIcon.innerHTML = '<i class="fas fa-id-badge st-icon-anim" style="color: var(--accent);"></i>';
+            stMsg.innerHTML = 'You have already checked-in and your entry is recorded. Welcome to DroneXperience!';
           }
-          // Save valid ID
           localStorage.setItem('dx_ticket_id', ticketId);
         } else {
+          stIcon.innerHTML = '<i class="fas fa-exclamation-triangle st-icon-anim" style="color: #ef4444;"></i>';
           stName.textContent = 'Not Found';
           stBadge.textContent = 'Unknown ID';
           stBadge.className = 'status-badge';
-          stMsg.textContent = data.message || 'We couldn\'t find any registration with that ID.';
+          stMsg.textContent = data.message || 'We couldn\'t find any registration with that ID. Please double-check and try again.';
         }
       } catch (err) {
         wait.style.display = 'none';
         content.style.display = 'block';
+        stIcon.innerHTML = '<i class="fas fa-wifi st-icon-anim" style="color: #ef4444;"></i>';
         stName.textContent = 'Error';
         stBadge.textContent = 'Connection Issue';
-        stMsg.textContent = 'Could not reach the server. Please try again later.';
+        stMsg.textContent = 'Could not reach the server. Please check your internet connection and try again.';
       } finally {
         btn.disabled = false;
       }
