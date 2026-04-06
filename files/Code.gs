@@ -2,6 +2,10 @@
 //  WORKSHOP REGISTRATION — Google Apps Script
 //  Paste this entire file into your Apps Script editor and deploy
 //  as a Web App (Execute as: Me, Access: Anyone)
+//
+//  IMPORTANT: After updating this code, you MUST re-deploy or run 
+//  any function manually once to trigger the "Review Permissions" 
+//  popup for Gmail access.
 // ═══════════════════════════════════════════════════════════════
 
 // ─── CONFIGURATION ─────────────────────────────────────────────
@@ -164,12 +168,33 @@ function approveParticipant(sheet, body) {
   for (let i = 1; i < data.length; i++) {
     const row = data[i];
     if (String(row[COL.TICKET_ID] || '').trim().toUpperCase() === ticketId) {
-      if (norm(row[COL.STATUS]) !== norm(PENDING_APPROVAL_STATUS)) return res({ success: false, message: 'Already processed' });
+      if (norm(row[COL.STATUS]) !== norm(PENDING_APPROVAL_STATUS)) {
+        return res({ success: false, message: 'Already processed (' + row[COL.STATUS] + ')' });
+      }
 
-      sheet.getRange(i + 1, COL.STATUS + 1).setValue(APPROVED_STATUS);
-      SpreadsheetApp.flush();
-      sendTicketEmail(row[COL.EMAIL], row[COL.NAME], ticketId, EVENT_NAME, EVENT_DATE, EVENT_VENUE);
-      return res({ success: true });
+      const email = String(row[COL.EMAIL] || '').trim();
+      const name  = String(row[COL.NAME] || '').trim();
+
+      if (!email || !email.includes('@')) {
+        return res({ success: false, message: 'Invalid or missing email address for this participant.' });
+      }
+
+      try {
+        // We update the sheet first so the record shows we ATTEMPTED approval
+        sheet.getRange(i + 1, COL.STATUS + 1).setValue(APPROVED_STATUS);
+        SpreadsheetApp.flush();
+        
+        // Then send email
+        sendTicketEmail(email, name, ticketId, EVENT_NAME, EVENT_DATE, EVENT_VENUE);
+        
+        return res({ success: true, message: 'Approved and Email Sent' });
+      } catch (err) {
+        // If email fails, we might want to revert the status or at least let the admin know
+        // For now, we revert it to "Email Error" or similar so they can try again or fix the account
+        sheet.getRange(i + 1, COL.STATUS + 1).setValue('Email Error');
+        console.error('Email failed for ' + email + ': ' + err.message);
+        return res({ success: false, message: 'Status updated to Approved, but Email Failed: ' + err.message });
+      }
     }
   }
   return res({ success: false, message: 'Ticket not found' });
