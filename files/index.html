@@ -1142,7 +1142,7 @@
 
           <!-- Unified QR Block for both Desktop and Mobile -->
           <div class="qr-block" id="qr-payment-area">
-            <img id="payment-qr" src="assets/payment_qr.png" alt="UPI Payment QR Code" style="width:220px; height:auto; margin-bottom:10px; cursor:pointer;" onclick="downloadQR()" />
+            <img id="payment-qr" src="assets/payment_qr.jpg" alt="UPI Payment QR Code" style="width:220px; height:auto; margin-bottom:10px; cursor:pointer;" onclick="downloadQR()" />
             <div style="margin-bottom:15px;">
                 <button class="btn-alt" onclick="downloadQR()"><i class="fas fa-download"></i> Save QR as Image</button>
             </div>
@@ -1402,8 +1402,8 @@
 
     function downloadQR() {
       const link = document.createElement('a');
-      link.href = 'assets/payment_qr.png';
-      link.download = 'DroneXperience_Payment_QR.png';
+      link.href = 'assets/payment_qr.jpg';
+      link.download = 'DroneXperience_Payment_QR.jpg';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
