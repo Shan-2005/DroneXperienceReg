@@ -1086,9 +1086,56 @@
       transition: all 0.2s;
     }
 
-    .modal-btn:hover {
+    .modal-btn:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 8px 30px rgba(245, 200, 66, 0.3);
+    }
+
+    .modal-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .modal-check-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      cursor: pointer;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      transition: all 0.3s;
+    }
+
+    .modal-check-wrap:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .modal-check-wrap.highlight {
+      border-color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .modal-check-wrap input {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--gold);
+    }
+
+    .modal-check-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
     }
   </style>
 </head>
@@ -1121,7 +1168,13 @@
           <div class="modal-item-text">Screenshot <strong>MUST</strong> clearly show the <strong>UPI Transaction ID</strong> and the <strong>Tag Line</strong>.</div>
         </div>
       </div>
-      <button class="modal-btn" onclick="confirmModal()">I Agree &amp; Proceed</button>
+      
+      <label class="modal-check-wrap" id="modal-agree-label">
+        <input type="checkbox" id="modal-agree-check" onchange="toggleModalBtn()">
+        <span class="modal-check-text">I have read and confirm all the above instructions</span>
+      </label>
+
+      <button class="modal-btn" id="modal-confirm-btn" onclick="confirmModal()">I Agree &amp; Proceed</button>
     </div>
   </div>
 
@@ -1438,11 +1491,35 @@
       document.getElementById('modal-tagline').textContent = tempTicketId; // Show in modal too
 
       // Show the mandatory instructions modal
+      document.getElementById('modal-agree-check').checked = false; 
+      document.getElementById('modal-agree-label').classList.remove('highlight');
+      toggleModalBtn(); // Initialize button state
+      
       document.getElementById('payment-modal').style.display = 'flex';
       document.body.style.overflow = 'hidden'; // Prevent scroll
     }
 
+    function toggleModalBtn() {
+      const isChecked = document.getElementById('modal-agree-check').checked;
+      const btn = document.getElementById('modal-confirm-btn');
+      if (isChecked) {
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        document.getElementById('modal-agree-label').classList.remove('highlight');
+      } else {
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+      }
+    }
+
     function confirmModal() {
+      const isChecked = document.getElementById('modal-agree-check').checked;
+      if (!isChecked) {
+        // Highlight the checkbox if they manage to click (though disabled should prevent it)
+        document.getElementById('modal-agree-label').classList.add('highlight');
+        return;
+      }
+
       // Close modal and proceed to payment step
       document.getElementById('payment-modal').style.display = 'none';
       document.body.style.overflow = '';
